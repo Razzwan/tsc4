@@ -11,14 +11,16 @@
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if (three.cell_hash() == hash) {
-    return tree;
-  }
-
-  slice msg = three.begin_parse();
+  slice msg = tree.begin_parse();
   while (msg.slice_refs_empty?() != -1) { ;; we should remind that -1 is true
     cell inner_cell = msg~load_ref(); ;; load cell from slice msg
-    return find_branch_by_hash(hash, inner_cell);
+    if (inner_cell.cell_hash() == hash) {
+      return tree;
+    }
+    cell result = find_branch_by_hash(hash, inner_cell);
+    ifnot (result.begin_parse().slice_empty?()) {
+      return inner_cell;
+    }
   }
 
   return begin_cell().end_cell();
