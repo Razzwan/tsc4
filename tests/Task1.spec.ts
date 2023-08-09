@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import {Cell, toNano} from 'ton-core';
 import { Task1 } from '../wrappers/Task1';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -34,5 +34,35 @@ describe('Task1', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and task1 are ready to use
+    });
+
+    it('find by hash if cell itself', async () => {
+        const cellWithChildren = new Cell();
+        const hashBuffer = cellWithChildren.hash();
+
+        const res = await task1.getBranchByHash([{type: 'int', value: BigInt('0x' + hashBuffer.toString('hex'))}, {type: 'cell', cell: cellWithChildren}]);
+        expect(res.toString()).toEqual(cellWithChildren.toString());
+    });
+
+    it('find some nested cells', async () => {
+        const child1 = new Cell();
+        const child2 = new Cell({
+            refs: [child1],
+        });
+        const child3 = new Cell({
+            refs: [child2],
+        });
+        const child4 = new Cell({
+            refs: [child3],
+        });
+
+        const cellWithChildren = new Cell({
+            refs: [child4],
+        });
+
+        const hashBuffer = child1.hash();
+
+        const res = await task1.getBranchByHash([{type: 'int', value: BigInt('0x' + hashBuffer.toString('hex'))}, {type: 'cell', cell: cellWithChildren}]);
+        expect(res.toString()).toEqual(child1.toString());
     });
 });
