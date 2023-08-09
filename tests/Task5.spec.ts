@@ -64,6 +64,11 @@ describe('Task5', () => {
         expect(parseData(res)).toEqual([0, 1, 1]);
     });
 
+    it('first 7 items', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(0)}, {type: 'int', value: BigInt(7)}]);
+        expect(parseData(res)).toEqual([0, 1, 1, 2, 3, 5, 8]);
+    });
+
     it('n = 1 k = 3', async () => {
         const res = await task5.getSequence([{type: 'int', value: BigInt(1)}, {type: 'int', value: BigInt(3)}]);
         expect(parseData(res)).toEqual([1, 1, 2]);
@@ -77,5 +82,10 @@ describe('Task5', () => {
             '1188518561323126046432205871807859915657177',
             '1923063428480944139667114773918309212080528'
         ]);
+    });
+
+    it('n = 115 k = 255', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(115)}, {type: 'int', value: BigInt(255)}]);
+        expect(parseData(res).length).toEqual(255);
     });
 });
