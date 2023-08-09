@@ -1,8 +1,11 @@
-import { Blockchain, SandboxContract } from '@ton-community/sandbox';
 import { Cell, toNano } from 'ton-core';
-import { Task5 } from '../wrappers/Task5';
-import '@ton-community/test-utils';
+
 import { compile } from '@ton-community/blueprint';
+import { Blockchain, SandboxContract } from '@ton-community/sandbox';
+import '@ton-community/test-utils';
+
+import { Task5 } from '../wrappers/Task5';
+import { parseData, parseDataAsString } from '../utils/parseData';
 
 describe('Task5', () => {
     let code: Cell;
@@ -34,5 +37,25 @@ describe('Task5', () => {
     it('should deploy', async () => {
         // the check is done inside beforeEach
         // blockchain and task5 are ready to use
+    });
+
+    it('first 3 items', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(0)}, {type: 'int', value: BigInt(3)}]);
+        expect(parseData(res)).toEqual([0, 1, 1]);
+    });
+
+    it('n = 1 k = 3', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(1)}, {type: 'int', value: BigInt(3)}]);
+        expect(parseData(res)).toEqual([1, 1, 2]);
+    });
+
+    it('n = 201 k = 4', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(201)}, {type: 'int', value: BigInt(4)}]);
+        expect(parseDataAsString(res)).toEqual([
+          '453973694165307953197296969697410619233826',
+            '734544867157818093234908902110449296423351',
+            '1188518561323126046432205871807859915657177',
+            '1923063428480944139667114773918309212080528'
+        ]);
     });
 });

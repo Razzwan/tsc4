@@ -10,22 +10,8 @@ import {
     Tuple,
     TupleItem,
 } from 'ton-core';
-import {TupleItemInt} from 'ton-core/src/tuple/tuple';
 
 export type Task2Config = {};
-
-export function parseData(tuple: Tuple | TupleItem): any {
-    if (!tuple.type && Array.isArray((tuple as any).items)) {
-        return (tuple as any).items.map((item: TupleItem) => parseData(item));
-    }
-    if (tuple.type === 'tuple') {
-        return tuple.items.map(item => parseData(item));
-    }
-    if (tuple.type === 'int') {
-        return Number(tuple.value);
-    }
-    return {};
-}
 
 export function task2ConfigToCell(config: Task2Config): Cell {
     return beginCell().endCell();

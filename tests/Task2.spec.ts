@@ -1,8 +1,11 @@
-import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import {Cell, toNano} from 'ton-core';
-import {getTuple1, getTuple2, parseData, Task2} from '../wrappers/Task2';
-import '@ton-community/test-utils';
+import { Cell, toNano } from 'ton-core';
+
 import { compile } from '@ton-community/blueprint';
+import { Blockchain, SandboxContract } from '@ton-community/sandbox';
+import '@ton-community/test-utils';
+
+import { getTuple1, getTuple2, Task2 } from '../wrappers/Task2';
+import { parseData } from '../utils/parseData';
 
 function arrFromNum(num: number, val: any = 1): Array<any> {
     return Array.from({length: num}, () => val);

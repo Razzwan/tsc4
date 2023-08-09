@@ -1,8 +1,10 @@
-import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import {Cell, toNano} from 'ton-core';
-import { Task1 } from '../wrappers/Task1';
-import '@ton-community/test-utils';
+import { Cell, toNano } from 'ton-core';
+
 import { compile } from '@ton-community/blueprint';
+import { Blockchain, SandboxContract } from '@ton-community/sandbox';
+import '@ton-community/test-utils';
+
+import { Task1 } from '../wrappers/Task1';
 
 describe('Task1', () => {
     let code: Cell;

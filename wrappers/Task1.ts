@@ -8,8 +8,8 @@ import {
     Sender,
     SendMode,
     TupleItemCell,
+    TupleItemInt,
 } from 'ton-core';
-import {TupleItemInt} from 'ton-core/src/tuple/tuple';
 
 export type Task1Config = {};
 

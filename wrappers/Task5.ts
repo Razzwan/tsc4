@@ -1,4 +1,14 @@
-import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from 'ton-core';
+import {
+    Address,
+    beginCell,
+    Cell,
+    Contract,
+    contractAddress,
+    ContractProvider,
+    Sender,
+    SendMode,
+    TupleItemInt
+} from 'ton-core';
 
 export type Task5Config = {};
 
@@ -25,5 +35,10 @@ export class Task5 implements Contract {
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell().endCell(),
         });
+    }
+
+    async getSequence(provider: ContractProvider, options: [TupleItemInt, TupleItemInt]): Promise<any> {
+        const result = await provider.get('fibonacci_sequence', options);
+        return result.stack.readTuple();
     }
 }

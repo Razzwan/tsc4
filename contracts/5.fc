@@ -18,6 +18,40 @@
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  return null();
+  int max1 = 370;
+  int max2 = 255;
+
+  int i = 2;
+  int times = n + k - i;
+  throw_if(i, n > max1);
+  throw_if(i, k > max2);
+  throw_if(i, times + i > max1);
+
+  int left = 0;
+  int right = 1;
+  int swap = left;
+
+  tuple r = empty_tuple();
+
+  if (n == left) {
+    r~tpush(left);
+    r~tpush(right);
+  }
+
+  if (n == right) {
+    r~tpush(right);
+  }
+
+  repeat (times) {
+    swap = left;
+    left = right;
+    right = swap + right;
+    if (i >= n) {
+      r~tpush(right);
+    }
+    i += 1;
+  }
+
+  return r;
 }
 
