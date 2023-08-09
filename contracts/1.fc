@@ -16,13 +16,11 @@
     cell inner_cell = msg~load_ref();
     if (inner_cell.cell_hash() == hash) {
       return tree;
-      ;; the same cell
-;;       return inner_cell;
     }
     cell res = find_branch_by_hash(hash, inner_cell);
 
     ifnot (res.begin_parse().slice_empty?()) {
-      return res;
+      return tree;
     }
   }
 
