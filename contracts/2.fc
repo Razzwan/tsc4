@@ -12,8 +12,127 @@
 () recv_internal() {
 }
 
+(int) tlen (tuple t) asm "TLEN";
+forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
+
+(tuple) reverse_tuple (tuple t1) {
+  tuple t2 = empty_tuple();
+  repeat (t1.tlen()) {
+    var value = t1~tpop();
+    t2~tpush(value);
+  }
+  return t2;
+}
+
+(int) mult_2_tuples (tuple a, tuple b) method_id {
+  int l = a.tlen();
+  int bL = b.tlen();
+
+  throw_unless(1, l == bL);
+
+  int r = 0;
+  repeat (l) {
+    r += a~tpop() * b~tpop();
+  }
+
+  return r;
+}
+
+(tuple) turn_tuple_90 (tuple t) method_id {
+  tuple r = empty_tuple();
+
+  tuple r0 = empty_tuple();
+  tuple r1 = empty_tuple();
+  tuple r2 = empty_tuple();
+
+  int n_size = t.tlen();
+  int m_size = t.first().tlen();
+
+  int n = 0;
+  int m = 0;
+
+  repeat (n_size) {
+    tuple t_n = t~tpop();
+    m = 0;
+    repeat (m_size) {
+      if (m == 0) {
+        r0~tpush(t_n~tpop());
+      }
+      if (m == 1) {
+        r1~tpush(t_n~tpop());
+      }
+      if (m == 2) {
+        r2~tpush(t_n~tpop());
+      }
+      m += 1;
+    }
+    n += 1;
+  }
+
+  ifnot (r2.tlen() == 0) {
+    r~tpush(r2);
+  }
+
+  ifnot (r1.tlen() == 0) {
+    r~tpush(r1);
+  }
+
+  ifnot (r0.tlen() == 0) {
+    r~tpush(r0);
+  }
+
+  return r;
+}
+
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-  return null();
+  tuple r = empty_tuple();
+
+  tuple r0 = empty_tuple();
+  tuple r1 = empty_tuple();
+  tuple r2 = empty_tuple();
+
+  int m_len = matrixA.tlen();
+
+  int m = 0;
+  int p = 0;
+
+  tuple matrixB = turn_tuple_90(matrixB);
+  int p_len = matrixB.tlen();
+
+  tuple matrixBCopy = matrixB;
+  repeat (m_len) {
+    tuple a_n = matrixA~tpop();
+    p = 0;
+    repeat (p_len) {
+      tuple b_p = matrixBCopy~tpop();
+      if (m == 0) {
+        r0~tpush(mult_2_tuples(reverse_tuple(a_n), b_p));
+      }
+      if (m == 1) {
+        r1~tpush(mult_2_tuples(reverse_tuple(a_n), b_p));
+      }
+      if (m == 2) {
+        r2~tpush(mult_2_tuples(reverse_tuple(a_n), b_p));
+      }
+      p += 1;
+    }
+    matrixBCopy = matrixB;
+    m += 1;
+  }
+
+  ifnot (r2.tlen() == 0) {
+    r~tpush(reverse_tuple(r2));
+  }
+
+  ifnot (r1.tlen() == 0) {
+    r~tpush(reverse_tuple(r1));
+  }
+
+  ifnot (r0.tlen() == 0) {
+    r~tpush(reverse_tuple(r0));
+  }
+
+  return r;
 }
 

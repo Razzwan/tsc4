@@ -17,8 +17,7 @@
     if (inner_cell.cell_hash() == hash) {
       return tree;
     }
-    cell result = find_branch_by_hash(hash, inner_cell);
-    ifnot (result.begin_parse().slice_empty?()) {
+    ifnot (find_branch_by_hash(hash, inner_cell).begin_parse().slice_empty?()) {
       return inner_cell;
     }
   }
