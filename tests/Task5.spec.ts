@@ -39,6 +39,26 @@ describe('Task5', () => {
         // blockchain and task5 are ready to use
     });
 
+    it('k is 0', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(0)}, {type: 'int', value: BigInt(0)}]);
+        expect(parseData(res)).toEqual([]);
+    });
+
+    it('k is 0 at any place', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(350)}, {type: 'int', value: BigInt(0)}]);
+        expect(parseData(res)).toEqual([]);
+    });
+
+    it('n = 0 k = 1', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(0)}, {type: 'int', value: BigInt(1)}]);
+        expect(parseData(res)).toEqual([0]);
+    });
+
+    it('n = 1 k = 1', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(1)}, {type: 'int', value: BigInt(1)}]);
+        expect(parseData(res)).toEqual([1]);
+    });
+
     it('first 3 items', async () => {
         const res = await task5.getSequence([{type: 'int', value: BigInt(0)}, {type: 'int', value: BigInt(3)}]);
         expect(parseData(res)).toEqual([0, 1, 1]);

@@ -33,9 +33,15 @@
 
   tuple r = empty_tuple();
 
+  if (k == 0) {
+    return r;
+  }
+
   if (n == left) {
     r~tpush(left);
-    r~tpush(right);
+    if (k != 1) {
+      r~tpush(right);
+    }
   }
 
   if (n == right) {
