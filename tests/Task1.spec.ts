@@ -37,17 +37,17 @@ describe('Task1', () => {
     });
 
     it('find by hash if cell itself', async () => {
-        const cellWithChildren = new Cell();
-        const hashBuffer = cellWithChildren.hash();
+        const cell = new Cell();
+        const hashBuffer = cell.hash();
 
-        const res = await task1.getBranchByHash([{type: 'int', value: BigInt('0x' + hashBuffer.toString('hex'))}, {type: 'cell', cell: cellWithChildren}]);
-        expect(res.toString()).toEqual(cellWithChildren.toString());
+        const res = await task1.getBranchByHash([{type: 'int', value: BigInt('0x' + hashBuffer.toString('hex'))}, {type: 'cell', cell}]);
+        expect(res.toString()).toEqual(cell.toString());
     });
 
     it('find some nested cells', async () => {
-        const child1 = new Cell();
+        const targetCell = new Cell();
         const child2 = new Cell({
-            refs: [child1],
+            refs: [targetCell],
         });
         const child3 = new Cell({
             refs: [child2],
@@ -60,9 +60,9 @@ describe('Task1', () => {
             refs: [child4],
         });
 
-        const hashBuffer = child1.hash();
+        const hashBuffer = targetCell.hash();
 
         const res = await task1.getBranchByHash([{type: 'int', value: BigInt('0x' + hashBuffer.toString('hex'))}, {type: 'cell', cell: cellWithChildren}]);
-        expect(res.toString()).toEqual(child1.toString());
+        expect(res.toString()).toEqual(targetCell.toString());
     });
 });
