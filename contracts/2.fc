@@ -44,6 +44,35 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
   tuple r0 = empty_tuple();
   tuple r1 = empty_tuple();
   tuple r2 = empty_tuple();
+  tuple r3 = empty_tuple();
+  tuple r4 = empty_tuple();
+  tuple r5 = empty_tuple();
+  tuple r6 = empty_tuple();
+  tuple r7 = empty_tuple();
+  tuple r8 = empty_tuple();
+  tuple r9 = empty_tuple();
+  tuple r10 = empty_tuple();
+  tuple r11 = empty_tuple();
+  tuple r12 = empty_tuple();
+  tuple r13 = empty_tuple();
+  tuple r14 = empty_tuple();
+  tuple r15 = empty_tuple();
+  tuple r16 = empty_tuple();
+  tuple r17 = empty_tuple();
+  tuple r18 = empty_tuple();
+  tuple r19 = empty_tuple();
+  tuple r20 = empty_tuple();
+  tuple r21 = empty_tuple();
+  tuple r22 = empty_tuple();
+  tuple r23 = empty_tuple();
+  tuple r24 = empty_tuple();
+  tuple r25 = empty_tuple();
+  tuple r26 = empty_tuple();
+  tuple r27 = empty_tuple();
+  tuple r28 = empty_tuple();
+  tuple r29 = empty_tuple();
+  tuple r30 = empty_tuple();
+  tuple r31 = empty_tuple();
 
   int n_size = t.tlen();
   int m_size = t.first().tlen();
@@ -64,21 +93,224 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
       if (m == 2) {
         r2~tpush(t_n~tpop());
       }
+      if (m == 3) {
+        r3~tpush(t_n~tpop());
+      }
+      if (m == 4) {
+        r4~tpush(t_n~tpop());
+      }
+      if (m == 5) {
+        r5~tpush(t_n~tpop());
+      }
+      if (m == 6) {
+        r6~tpush(t_n~tpop());
+      }
+      if (m == 7) {
+        r7~tpush(t_n~tpop());
+      }
+      if (m == 8) {
+        r8~tpush(t_n~tpop());
+      }
+      if (m == 9) {
+        r9~tpush(t_n~tpop());
+      }
+      if (m == 10) {
+        r10~tpush(t_n~tpop());
+      }
+      if (m == 11) {
+        r11~tpush(t_n~tpop());
+      }
+      if (m == 12) {
+        r12~tpush(t_n~tpop());
+      }
+      if (m == 13) {
+        r13~tpush(t_n~tpop());
+      }
+      if (m == 14) {
+        r14~tpush(t_n~tpop());
+      }
+      if (m == 15) {
+        r15~tpush(t_n~tpop());
+      }
+      if (m == 16) {
+        r16~tpush(t_n~tpop());
+      }
+      if (m == 17) {
+        r17~tpush(t_n~tpop());
+      }
+      if (m == 18) {
+        r18~tpush(t_n~tpop());
+      }
+      if (m == 19) {
+        r19~tpush(t_n~tpop());
+      }
+      if (m == 20) {
+        r20~tpush(t_n~tpop());
+      }
+      if (m == 21) {
+        r21~tpush(t_n~tpop());
+      }
+      if (m == 22) {
+        r22~tpush(t_n~tpop());
+      }
+      if (m == 23) {
+        r23~tpush(t_n~tpop());
+      }
+      if (m == 24) {
+        r24~tpush(t_n~tpop());
+      }
+      if (m == 25) {
+        r25~tpush(t_n~tpop());
+      }
+      if (m == 26) {
+        r26~tpush(t_n~tpop());
+      }
+      if (m == 27) {
+        r27~tpush(t_n~tpop());
+      }
+      if (m == 28) {
+        r28~tpush(t_n~tpop());
+      }
+      if (m == 29) {
+        r29~tpush(t_n~tpop());
+      }
+      if (m == 30) {
+        r30~tpush(t_n~tpop());
+      }
+      if (m == 31) {
+        r31~tpush(t_n~tpop());
+      }
       m += 1;
     }
     n += 1;
   }
 
+  ifnot (r31.tlen() == 0) {
+    r~tpush(reverse_tuple(r31));
+  }
+
+  ifnot (r30.tlen() == 0) {
+    r~tpush(reverse_tuple(r30));
+  }
+
+  ifnot (r29.tlen() == 0) {
+    r~tpush(reverse_tuple(r29));
+  }
+
+  ifnot (r28.tlen() == 0) {
+    r~tpush(reverse_tuple(r28));
+  }
+
+  ifnot (r27.tlen() == 0) {
+    r~tpush(reverse_tuple(r27));
+  }
+
+  ifnot (r26.tlen() == 0) {
+    r~tpush(reverse_tuple(r26));
+  }
+
+  ifnot (r25.tlen() == 0) {
+    r~tpush(reverse_tuple(r25));
+  }
+
+  ifnot (r24.tlen() == 0) {
+    r~tpush(reverse_tuple(r24));
+  }
+
+  ifnot (r23.tlen() == 0) {
+    r~tpush(reverse_tuple(r23));
+  }
+
+  ifnot (r22.tlen() == 0) {
+    r~tpush(reverse_tuple(r22));
+  }
+
+  ifnot (r21.tlen() == 0) {
+    r~tpush(reverse_tuple(r21));
+  }
+
+  ifnot (r20.tlen() == 0) {
+    r~tpush(reverse_tuple(r20));
+  }
+
+  ifnot (r19.tlen() == 0) {
+    r~tpush(reverse_tuple(r19));
+  }
+
+  ifnot (r18.tlen() == 0) {
+    r~tpush(reverse_tuple(r18));
+  }
+
+  ifnot (r17.tlen() == 0) {
+    r~tpush(reverse_tuple(r17));
+  }
+
+  ifnot (r16.tlen() == 0) {
+    r~tpush(reverse_tuple(r16));
+  }
+
+  ifnot (r15.tlen() == 0) {
+    r~tpush(reverse_tuple(r15));
+  }
+
+  ifnot (r14.tlen() == 0) {
+    r~tpush(reverse_tuple(r14));
+  }
+
+  ifnot (r13.tlen() == 0) {
+    r~tpush(reverse_tuple(r13));
+  }
+
+  ifnot (r12.tlen() == 0) {
+    r~tpush(reverse_tuple(r12));
+  }
+
+  ifnot (r11.tlen() == 0) {
+    r~tpush(reverse_tuple(r11));
+  }
+
+  ifnot (r10.tlen() == 0) {
+    r~tpush(reverse_tuple(r10));
+  }
+
+  ifnot (r9.tlen() == 0) {
+    r~tpush(reverse_tuple(r9));
+  }
+
+  ifnot (r8.tlen() == 0) {
+    r~tpush(reverse_tuple(r8));
+  }
+
+  ifnot (r7.tlen() == 0) {
+    r~tpush(reverse_tuple(r7));
+  }
+
+  ifnot (r6.tlen() == 0) {
+    r~tpush(reverse_tuple(r6));
+  }
+
+  ifnot (r5.tlen() == 0) {
+    r~tpush(reverse_tuple(r5));
+  }
+
+  ifnot (r4.tlen() == 0) {
+    r~tpush(reverse_tuple(r4));
+  }
+
+  ifnot (r3.tlen() == 0) {
+    r~tpush(reverse_tuple(r3));
+  }
+
   ifnot (r2.tlen() == 0) {
-    r~tpush(r2);
+    r~tpush(reverse_tuple(r2));
   }
 
   ifnot (r1.tlen() == 0) {
-    r~tpush(r1);
+    r~tpush(reverse_tuple(r1));
   }
 
   ifnot (r0.tlen() == 0) {
-    r~tpush(r0);
+    r~tpush(reverse_tuple(r0));
   }
 
   return r;
@@ -91,6 +323,35 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
   tuple r0 = empty_tuple();
   tuple r1 = empty_tuple();
   tuple r2 = empty_tuple();
+  tuple r3 = empty_tuple();
+  tuple r4 = empty_tuple();
+  tuple r5 = empty_tuple();
+  tuple r6 = empty_tuple();
+  tuple r7 = empty_tuple();
+  tuple r8 = empty_tuple();
+  tuple r9 = empty_tuple();
+  tuple r10 = empty_tuple();
+  tuple r11 = empty_tuple();
+  tuple r12 = empty_tuple();
+  tuple r13 = empty_tuple();
+  tuple r14 = empty_tuple();
+  tuple r15 = empty_tuple();
+  tuple r16 = empty_tuple();
+  tuple r17 = empty_tuple();
+  tuple r18 = empty_tuple();
+  tuple r19 = empty_tuple();
+  tuple r20 = empty_tuple();
+  tuple r21 = empty_tuple();
+  tuple r22 = empty_tuple();
+  tuple r23 = empty_tuple();
+  tuple r24 = empty_tuple();
+  tuple r25 = empty_tuple();
+  tuple r26 = empty_tuple();
+  tuple r27 = empty_tuple();
+  tuple r28 = empty_tuple();
+  tuple r29 = empty_tuple();
+  tuple r30 = empty_tuple();
+  tuple r31 = empty_tuple();
 
   int m_len = matrixA.tlen();
 
@@ -107,18 +368,222 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
     repeat (p_len) {
       tuple b_p = matrixBCopy~tpop();
       if (m == 0) {
-        r0~tpush(mult_2_tuples(reverse_tuple(a_n), b_p));
+        r0~tpush(mult_2_tuples(a_n, b_p));
       }
       if (m == 1) {
-        r1~tpush(mult_2_tuples(reverse_tuple(a_n), b_p));
+        r1~tpush(mult_2_tuples(a_n, b_p));
       }
       if (m == 2) {
-        r2~tpush(mult_2_tuples(reverse_tuple(a_n), b_p));
+        r2~tpush(mult_2_tuples(a_n, b_p));
       }
+      if (m == 3) {
+        r3~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 4) {
+        r4~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 5) {
+        r5~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 6) {
+        r6~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 7) {
+        r7~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 8) {
+        r8~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 9) {
+        r9~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 10) {
+        r10~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 11) {
+        r11~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 12) {
+        r12~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 13) {
+        r13~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 14) {
+        r14~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 15) {
+        r15~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 16) {
+        r16~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 17) {
+        r17~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 18) {
+        r18~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 19) {
+        r19~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 20) {
+        r20~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 21) {
+        r21~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 22) {
+        r22~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 23) {
+        r23~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 24) {
+        r24~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 25) {
+        r25~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 26) {
+        r26~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 27) {
+        r27~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 28) {
+        r28~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 29) {
+        r29~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 30) {
+        r30~tpush(mult_2_tuples(a_n, b_p));
+      }
+      if (m == 31) {
+        r31~tpush(mult_2_tuples(a_n, b_p));
+      }
+
       p += 1;
     }
     matrixBCopy = matrixB;
     m += 1;
+  }
+
+  ifnot (r31.tlen() == 0) {
+    r~tpush(reverse_tuple(r31));
+  }
+
+  ifnot (r30.tlen() == 0) {
+    r~tpush(reverse_tuple(r30));
+  }
+
+  ifnot (r29.tlen() == 0) {
+    r~tpush(reverse_tuple(r29));
+  }
+
+  ifnot (r28.tlen() == 0) {
+    r~tpush(reverse_tuple(r28));
+  }
+
+  ifnot (r27.tlen() == 0) {
+    r~tpush(reverse_tuple(r27));
+  }
+
+  ifnot (r26.tlen() == 0) {
+    r~tpush(reverse_tuple(r26));
+  }
+
+  ifnot (r25.tlen() == 0) {
+    r~tpush(reverse_tuple(r25));
+  }
+
+  ifnot (r24.tlen() == 0) {
+    r~tpush(reverse_tuple(r24));
+  }
+
+  ifnot (r23.tlen() == 0) {
+    r~tpush(reverse_tuple(r23));
+  }
+
+  ifnot (r22.tlen() == 0) {
+    r~tpush(reverse_tuple(r22));
+  }
+
+  ifnot (r21.tlen() == 0) {
+    r~tpush(reverse_tuple(r21));
+  }
+
+  ifnot (r20.tlen() == 0) {
+    r~tpush(reverse_tuple(r20));
+  }
+
+  ifnot (r19.tlen() == 0) {
+    r~tpush(reverse_tuple(r19));
+  }
+
+  ifnot (r18.tlen() == 0) {
+    r~tpush(reverse_tuple(r18));
+  }
+
+  ifnot (r17.tlen() == 0) {
+    r~tpush(reverse_tuple(r17));
+  }
+
+  ifnot (r16.tlen() == 0) {
+    r~tpush(reverse_tuple(r16));
+  }
+
+  ifnot (r15.tlen() == 0) {
+    r~tpush(reverse_tuple(r15));
+  }
+
+  ifnot (r14.tlen() == 0) {
+    r~tpush(reverse_tuple(r14));
+  }
+
+  ifnot (r13.tlen() == 0) {
+    r~tpush(reverse_tuple(r13));
+  }
+
+  ifnot (r12.tlen() == 0) {
+    r~tpush(reverse_tuple(r12));
+  }
+
+  ifnot (r11.tlen() == 0) {
+    r~tpush(reverse_tuple(r11));
+  }
+
+  ifnot (r10.tlen() == 0) {
+    r~tpush(reverse_tuple(r10));
+  }
+
+  ifnot (r9.tlen() == 0) {
+    r~tpush(reverse_tuple(r9));
+  }
+
+  ifnot (r8.tlen() == 0) {
+    r~tpush(reverse_tuple(r8));
+  }
+
+  ifnot (r7.tlen() == 0) {
+    r~tpush(reverse_tuple(r7));
+  }
+
+  ifnot (r6.tlen() == 0) {
+    r~tpush(reverse_tuple(r6));
+  }
+
+  ifnot (r5.tlen() == 0) {
+    r~tpush(reverse_tuple(r5));
+  }
+
+  ifnot (r4.tlen() == 0) {
+    r~tpush(reverse_tuple(r4));
+  }
+
+  ifnot (r3.tlen() == 0) {
+    r~tpush(reverse_tuple(r3));
   }
 
   ifnot (r2.tlen() == 0) {
