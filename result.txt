@@ -1,0 +1,23 @@
+Problem #1:
+Compiled: true
+Passed Tests: false
+
+Problem #2:
+Compiled: true
+Passed Tests: true
+GasValue: 31974311
+Points: 5.954293764345534
+
+Problem #3:
+Compiled: true
+Passed Tests: false
+
+Problem #4:
+Compiled: true
+Passed Tests: false
+
+Problem #5:
+Compiled: true
+Passed Tests: true
+GasValue: 1956307
+Points: 5.382614491234059

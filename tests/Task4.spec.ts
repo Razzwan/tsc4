@@ -27,7 +27,7 @@ function cellFromStr(str: string, ref?: Cell, isRoot: boolean = true): Cell {
 
 }
 
-const SHIFT_TO_RIGHT = false;
+const SHIFT_TO_RIGHT = true;
 
 const d1 = [
     ' !"#$%&'
