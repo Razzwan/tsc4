@@ -39,7 +39,7 @@
   return body.end_cell().begin_parse();
 }
 
-(cell) shift_text(int shift, cell text, int bool) inline {
+(cell) shift_text(int shift, cell text, int bool) {
   slice tSlice = text.begin_parse().skip_bits(32);
 
   if (shift == 0) {
