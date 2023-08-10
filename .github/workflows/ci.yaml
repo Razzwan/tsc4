@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-        
+
       - name: Filter and Archive code
         run: |
           mkdir -p contracts_filtered
@@ -32,6 +32,8 @@ jobs:
 
           # Storing the JSON response in the response.log file
           echo "$json_response" > response.log
+          
+          echo "$json_response"
           
           if [ $status_code -eq 200 ]; then
             echo "Package delivered successfully."
