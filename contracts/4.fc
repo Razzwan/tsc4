@@ -43,10 +43,7 @@
   slice tSlice = text.begin_parse().skip_bits(32);
 
   if (shift == 0) {
-    return begin_cell()
-            .store_uint(0, 32)
-            .store_slice(tSlice)
-            .end_cell();
+    return text;
   }
 
   return begin_cell()

@@ -20,7 +20,7 @@
     cell res = find_branch_by_hash(hash, inner_cell);
 
     ifnot (res.begin_parse().slice_empty?()) {
-      return tree;
+      return res;
     }
   }
 
