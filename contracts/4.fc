@@ -23,9 +23,9 @@
   builder body = begin_cell();
 
   do {
-    int bit = tSlice~load_int(8) + shift;
-    if (bit > 126) {
-      bit -= 95;
+    int bit = tSlice~load_int(8) - shift;
+    if (bit < 32) {
+      bit += 95;
     }
     body = store_int(body, bit, 8);
   } until (tSlice.slice_data_empty?());
@@ -51,9 +51,9 @@
   builder body = begin_cell();
 
   do {
-    int bit = tSlice~load_int(8) - shift;
-    if (bit < 32) {
-      bit += 95;
+    int bit = tSlice~load_int(8) + shift;
+    if (bit > 126) {
+      bit -= 95;
     }
     body = store_int(body, bit, 8);
   } until (tSlice.slice_data_empty?());

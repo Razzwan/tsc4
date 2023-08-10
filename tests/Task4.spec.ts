@@ -66,13 +66,13 @@ describe('Task4', () => {
           + "'"
           + '()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~';
 
-        const cell = cellFromStr(str1);
+        const cell = cellFromStr(str2);
 
         expect(str1.length).toBe(94);
 
         const res1 = await task4.getEncrypt([{type: 'int', value: 1n}, {type: 'cell', cell}]);
 
-        expect(res1).toEqualCell(cellFromStr(str2));
+        expect(res1).toEqualCell(cellFromStr(str1));
 
         const res2 = await task4.getDecrypt([{type: 'int', value: 1n}, {type: 'cell', cell: res1}]);
 
@@ -84,12 +84,12 @@ describe('Task4', () => {
 
         const str2 = ' ';
 
-        const cell = cellFromStr(str1);
+        const cell = cellFromStr(str2);
 
         const res1 = await task4.getEncrypt([{type: 'int', value: 1n}, {type: 'cell', cell}]);
 
         // expect(res1.beginParse().loadStringTail()).toEqual('1');
-        expect(res1).toEqualCell(cellFromStr(str2));
+        expect(res1).toEqualCell(cellFromStr(str1));
 
         const res2 = await task4.getDecrypt([{type: 'int', value: 1n}, {type: 'cell', cell: res1}]);
 
