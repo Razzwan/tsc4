@@ -8,7 +8,6 @@ import {
     Sender,
     SendMode,
     Tuple,
-    TupleItem,
 } from 'ton-core';
 
 export type Task2Config = {};

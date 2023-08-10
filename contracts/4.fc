@@ -11,11 +11,57 @@
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  slice tSlice = text.begin_parse().skip_bits(32);
+
+  if (shift == 0) {
+    return begin_cell()
+            .store_uint(0, 32)
+            .store_slice(tSlice.preload_bits(tSlice.slice_bits()))
+            .end_cell();
+  }
+
+  builder body = begin_cell();
+
+  do {
+    int bit = tSlice~load_int(8) + shift;
+    if (bit > 126) {
+      bit -= 95;
+    }
+    body = store_int(body, bit, 8);
+  } until (tSlice.slice_data_empty?());
+
+  slice b = end_cell(body).begin_parse();
+  return begin_cell()
+          .store_uint(0, 32)
+          .store_slice(b.preload_bits(b.slice_bits()))
+          .end_cell();
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  slice tSlice = text.begin_parse().skip_bits(32);
+
+  if (shift == 0) {
+    return begin_cell()
+            .store_uint(0, 32)
+            .store_slice(tSlice.preload_bits(tSlice.slice_bits()))
+            .end_cell();
+  }
+
+  builder body = begin_cell();
+
+  do {
+    int bit = tSlice~load_int(8) - shift;
+    if (bit < 32) {
+      bit += 95;
+    }
+    body = store_int(body, bit, 8);
+  } until (tSlice.slice_data_empty?());
+
+  slice b = end_cell(body).begin_parse();
+  return begin_cell()
+          .store_uint(0, 32)
+          .store_slice(b.preload_bits(b.slice_bits()))
+          .end_cell();
 }
 

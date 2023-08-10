@@ -1,4 +1,15 @@
-import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from 'ton-core';
+import {
+    Address,
+    beginCell,
+    Cell,
+    Contract,
+    contractAddress,
+    ContractProvider,
+    Sender,
+    SendMode,
+    TupleItemCell, TupleItemInt
+} from 'ton-core';
+import {TupleItemSlice} from 'ton-core/dist/tuple/tuple';
 
 export type Task3Config = {};
 
@@ -25,5 +36,15 @@ export class Task3 implements Contract {
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell().endCell(),
         });
+    }
+
+    async getCellExample(provider: ContractProvider): Promise<any> {
+        const result = await provider.get('get_cell_example', []);
+        return result.stack.readCell();
+    }
+
+    async getChangedLinkedList(provider: ContractProvider, options: [TupleItemInt, TupleItemInt, TupleItemCell]): Promise<any> {
+        const result = await provider.get('find_and_replace', options);
+        return result.stack.readCell();
     }
 }

@@ -1,7 +1,7 @@
 import { Cell, toNano } from 'ton-core';
 
 import { compile } from '@ton-community/blueprint';
-import { Blockchain, SandboxContract } from '@ton-community/sandbox';
+import {Blockchain, printTransactionFees, SandboxContract} from '@ton-community/sandbox';
 import '@ton-community/test-utils';
 
 import { getTuple1, getTuple2, Task2 } from '../wrappers/Task2';
