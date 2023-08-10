@@ -68,6 +68,8 @@ jobs:
               compiled=$(echo "$problems" | jq -r ".[$i].compiled")
               points=$(echo "$problems" | jq -r ".[$i].points")
               compilationError=$(echo "$problems" | jq -r ".[$i].compilationError")
+              passedCount=$(echo "$problems" | jq -r ".[$i].numberOfTests.[0]")
+              overalCount=$(echo "$problems" | jq -r ".[$i].numberOfTests.[1]")
               echo ""
               echo "Problem #$((i+1)):"
               echo "Compiled: $compiled"
@@ -75,6 +77,7 @@ jobs:
                   echo "CompilationError: $compilationError"
               fi
               echo "Passed Tests: $passed"
+              echo "$passedCount/$overalCount"
               if [[ "$passed" == "true" ]]; then
                   echo "GasValue: $gasValue"
                   echo "Points: $points"
