@@ -76,8 +76,8 @@ jobs:
               fi
               echo "Passed Tests: $passed"
               test_info=$(echo "$problems" | jq -r ".[$i].numberOfTests")
-              echo "$test_info.[0]"
-              echo "$test_info.[1]"
+              echo "$test_info[0]"
+              echo "$test_info[1]"
               if [[ "$passed" == "true" ]]; then
                   echo "GasValue: $gasValue"
                   echo "Points: $points"
