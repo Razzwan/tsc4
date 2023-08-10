@@ -33,8 +33,6 @@ jobs:
           # Storing the JSON response in the response.log file
           echo "$json_response" > response.log
           
-          echo "$json_response"
-          
           if [ $status_code -eq 200 ]; then
             echo "Package delivered successfully."
             echo "::set-output name=success::true"  # Set success to true
@@ -68,6 +66,8 @@ jobs:
               compiled=$(echo "$problems" | jq -r ".[$i].compiled")
               points=$(echo "$problems" | jq -r ".[$i].points")
               compilationError=$(echo "$problems" | jq -r ".[$i].compilationError")
+              numberOfTests=$(echo "$problems" | jq -r ".[$i].numberOfTests")
+              
               echo ""
               echo "Problem #$((i+1)):"
               echo "Compiled: $compiled"
@@ -75,8 +75,11 @@ jobs:
                   echo "CompilationError: $compilationError"
               fi
               echo "Passed Tests: $passed"
-              test_info=$(echo "$problems" | jq -r ".[$i].numberOfTests")
-              echo "${test_info[0]}/${test_info[1]}"
+              if [[ "$passed" == "false" && "$numberOfTests" != "null" ]]; then
+                  x=$(echo "$numberOfTests" | jq -r '.[0]')
+                  y=$(echo "$numberOfTests" | jq -r '.[1]')
+                  echo "$x/$y Tests Passed"
+              fi
               if [[ "$passed" == "true" ]]; then
                   echo "GasValue: $gasValue"
                   echo "Points: $points"
