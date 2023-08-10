@@ -17,7 +17,7 @@
 }
 
 ;; testable
-(tuple) fibonacci_sequence (int n, int k) inline method_id {
+(tuple) fibonacci_sequence (int n, int k) method_id {
   throw_if(1, n < 0);
   throw_if(1, k < 0);
 
