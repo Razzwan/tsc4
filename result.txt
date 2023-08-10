@@ -1,3 +1,5 @@
+Всего: 11.338
+
 Problem #1:
 Compiled: true
 Passed Tests: false
