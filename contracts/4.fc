@@ -9,59 +9,57 @@
 () recv_internal() {
 }
 
-;; testable
-(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+(slice) shift_slice(int shift, slice tSlice, int bool) {
+  builder body = begin_cell();
+
+  do {
+    int bit = tSlice~load_int(8);
+    if (bool) {
+      bit -= shift;
+      if (bit < 32) {
+        bit += 95;
+      }
+    } else {
+      bit += shift;
+      if (bit > 126) {
+        bit -= 95;
+      }
+    }
+
+    body = store_int(body, bit, 8);
+  } until (tSlice.slice_data_empty?());
+
+  ifnot (tSlice.slice_refs_empty?()) {
+    slice ref = shift_slice(shift, tSlice.preload_ref().begin_parse(), bool);
+    body = store_ref(body, begin_cell().store_slice(ref).end_cell());
+  }
+
+  return body.end_cell().begin_parse();
+}
+
+(cell) shift_text(int shift, cell text, int bool) inline {
   slice tSlice = text.begin_parse().skip_bits(32);
 
   if (shift == 0) {
     return begin_cell()
             .store_uint(0, 32)
-            .store_slice(tSlice.preload_bits(tSlice.slice_bits()))
+            .store_slice(tSlice)
             .end_cell();
   }
 
-  builder body = begin_cell();
-
-  do {
-    int bit = tSlice~load_int(8) - shift;
-    if (bit < 32) {
-      bit += 95;
-    }
-    body = store_int(body, bit, 8);
-  } until (tSlice.slice_data_empty?());
-
-  slice b = end_cell(body).begin_parse();
   return begin_cell()
           .store_uint(0, 32)
-          .store_slice(b.preload_bits(b.slice_bits()))
+          .store_slice(shift_slice(shift, tSlice, bool))
           .end_cell();
 }
 
 ;; testable
+(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+  return shift_text(shift, text, 0);
+}
+
+;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  slice tSlice = text.begin_parse().skip_bits(32);
-
-  if (shift == 0) {
-    return begin_cell()
-            .store_uint(0, 32)
-            .store_slice(tSlice.preload_bits(tSlice.slice_bits()))
-            .end_cell();
-  }
-
-  builder body = begin_cell();
-
-  do {
-    int bit = tSlice~load_int(8) + shift;
-    if (bit > 126) {
-      bit -= 95;
-    }
-    body = store_int(body, bit, 8);
-  } until (tSlice.slice_data_empty?());
-
-  slice b = end_cell(body).begin_parse();
-  return begin_cell()
-          .store_uint(0, 32)
-          .store_slice(b.preload_bits(b.slice_bits()))
-          .end_cell();
+  return shift_text(shift, text, -1);
 }
 
