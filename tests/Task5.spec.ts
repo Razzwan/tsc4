@@ -59,6 +59,16 @@ describe('Task5', () => {
         expect(parseData(res)).toEqual([1]);
     });
 
+    it('n = 1 k = 1', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(1)}, {type: 'int', value: BigInt(1)}]);
+        expect(parseData(res)).toEqual([1]);
+    });
+
+    it('n = 2 k = 1', async () => {
+        const res = await task5.getSequence([{type: 'int', value: BigInt(2)}, {type: 'int', value: BigInt(1)}]);
+        expect(parseData(res)).toEqual([1]);
+    });
+
     it('first 3 items', async () => {
         const res = await task5.getSequence([{type: 'int', value: BigInt(0)}, {type: 'int', value: BigInt(3)}]);
         expect(parseData(res)).toEqual([0, 1, 1]);
