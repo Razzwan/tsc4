@@ -28,10 +28,14 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
   return t2;
 }
 
-() recv_internal() {
-}
-
-() replace_with_start(int flag, int value, cell linked_list, int start) {
+(int) ln2(int t) {
+  int i = 0;
+  int r = t;
+  while (r > 0) {
+    r = r >> 1;
+    i += 1;
+  }
+  return i;
 }
 
 ;; testable
@@ -39,38 +43,42 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
   throw_if(1, flag <= 0);
   throw_if(1, value <= 0);
 
+  int flagL = ln2(flag);
+  slice flagSlice = begin_cell().store_uint(flag, flagL).end_cell().begin_parse();
+
+  int valueL = ln2(value);
+  slice valueSlice = begin_cell().store_uint(value, valueL).end_cell().begin_parse();
+
+  slice from = linked_list.begin_parse();
   builder to = begin_cell();
 
-  return begin_cell().store_uint(flag, 8).end_cell();
+  int cursor = 0;
 
-;;   return end_cell(flagSlice);
+  while (from.slice_data_empty?() == 0) {
+    (_, int fromBit) = load_uint(from.preload_bits(flagL).skip_bits(cursor), 1);
+    (_, int toBit)   = load_uint(flagSlice.preload_bits(flagL).skip_bits(cursor), 1);
+    if (fromBit == toBit) {
+      cursor += 1;
 
-;;   slice from = linked_list.begin_parse();
+      if (cursor == flagL) {
+        (_, int replacement) = load_uint(valueSlice.preload_bits(valueL), valueL);
+        to = store_uint(to, replacement, valueL);
+        from = from.skip_bits(cursor);
+        cursor = 0;
+      }
 
-;;   int cursor = 0;
-;;   slice tempSlice = flagSlice;
-;;   while (from.slice_empty?() == 0) {
-;;     ifnot (tempSlice.slice_empty?()) {
-;;       to = store_uint(to, tempSlice~load_uint(1), 1);
-;;     }
+    } else {
+      to = store_uint(to, from~load_uint(cursor + 1), cursor + 1);
+      cursor = 0;
+    }
+  }
 
-;;     cursor += 1;
-;;     to = store_uint(to, from~load_uint(1), 1);
+  if (cursor) {
+    to = store_uint(to, from~load_uint(cursor), cursor);
+  }
 
-
-;;     if (from.preload_bits(1).load_uint(1) == flagSlice.preload_bits(flagL).skip_bits(cursor)~load_uint(1)) {
-;;       cursor += 1;
-;;
-;;       if (cursor == flagL) {
-;;         to = store_uint(to, from~load_uint(cursor + 1), cursor + 1);
-;;         cursor = 0;
-;;       }
-;;     } else {
-;;       to = store_uint(to, from~load_uint(cursor + 1), cursor + 1);
-;;       cursor = 0;
-;;     }
-;;   }
-
-;;   return end_cell(to);
+  return end_cell(to);
 }
 
+() recv_internal() {
+}

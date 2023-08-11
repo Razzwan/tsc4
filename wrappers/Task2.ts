@@ -7,7 +7,7 @@ import {
     ContractProvider,
     Sender,
     SendMode,
-    Tuple,
+    Tuple, TupleItem, TupleReader,
 } from 'ton-core';
 
 export type Task2Config = {};
@@ -74,7 +74,7 @@ export class Task2 implements Contract {
         return result.stack.readNumber();
     }
 
-    async getMatrixResult(provider: ContractProvider, options: [Tuple, Tuple]): Promise<any> {
+    async getMatrixResult(provider: ContractProvider, options: [Tuple, Tuple]): Promise<TupleReader> {
         const result = await provider.get('matrix_multiplier', options);
         return result.stack.readTuple();
     }

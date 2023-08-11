@@ -1,7 +1,7 @@
 import { Cell, toNano } from 'ton-core';
 
 import { compile } from '@ton-community/blueprint';
-import {Blockchain, printTransactionFees, SandboxContract} from '@ton-community/sandbox';
+import {Blockchain, SandboxContract} from '@ton-community/sandbox';
 import '@ton-community/test-utils';
 
 import { getTuple1, getTuple2, Task2 } from '../wrappers/Task2';
@@ -78,18 +78,18 @@ describe('Task2', () => {
     describe('multiply matrix', () => {
         it('multiply simplest matrix', async () => {
             const res = await task2.getMatrixResult([getTuple2([[1, 2, 3], [4, 5, 6]]), getTuple2([[7, 8], [9, 10], [11, 12]])]);
-            expect(parseData(res)).toEqual([[58, 64], [139, 154]]);
+            expect(parseData(res as any)).toEqual([[58, 64], [139, 154]]);
         });
 
         it('4x4', async () => {
             const res = await task2.getMatrixResult([getTuple2([[1, 2, 3], [4, 5, 6], [7,8,9], [10,11,12]]), getTuple2([[7, 8], [9, 10], [11, 12]])]);
-            expect(parseData(res)).toEqual([[58, 64], [139, 154], [220, 244], [301,334]]);
+            expect(parseData(res as any)).toEqual([[58, 64], [139, 154], [220, 244], [301,334]]);
         });
 
         it('32x32', async () => {
             const m = 28;
             const res = await task2.getMatrixResult([getTuple2(arrFromNum(m, arrFromNum(m, 2))), getTuple2(arrFromNum(m, arrFromNum(m, 2000)))]);
-            expect(parseData(res)).toEqual(arrFromNum(m, arrFromNum(m, m*4000)));
+            expect(parseData(res as any)).toEqual(arrFromNum(m, arrFromNum(m, m*4000)));
         });
     });
 });
