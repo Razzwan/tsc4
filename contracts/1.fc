@@ -40,6 +40,18 @@
     return tree;
   }
 
+  slice treeSlice = tree.begin_parse();
+
+  while (treeSlice.slice_refs_empty?() == 0) {
+    cell branch = treeSlice~load_ref();
+
+    cell res = find_branch_by_hash(hash, branch);
+
+    ifnot (res.begin_parse().slice_empty?()) {
+      return res;
+    }
+  }
+
 ;;   slice msg = tree.begin_parse();
 ;;   while (msg.slice_refs_empty?() == 0) {
 ;;     cell root = tree;
