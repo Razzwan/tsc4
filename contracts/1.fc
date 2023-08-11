@@ -9,30 +9,30 @@
 () recv_internal() {
 }
 
-(cell) find_root_by_hash(int hash, cell tree, cell root) method_id {
-  slice branch = tree.begin_parse();
-  while (branch.slice_refs_empty?() != -1) {
-    cell _root = root;
-
-    cell inner_branch = branch~load_ref();
-
-    (_, int flag) = inner_branch.begin_parse().load_uint(32);
-    ifnot (flag) {
-      _root = inner_branch;
-    }
-
-    if (inner_branch.cell_hash() == hash) {
-      return _root;
-    }
-    cell res = find_root_by_hash(hash, inner_branch, _root);
-
-    ifnot (res.begin_parse().slice_empty?()) {
-      return res;
-    }
-  }
-
-  return begin_cell().end_cell();
-}
+;; (cell) find_root_by_hash(int hash, cell tree, cell root) method_id {
+;;   slice branch = tree.begin_parse();
+;;   while (branch.slice_refs_empty?() != -1) {
+;;     cell _root = root;
+;;
+;;     cell inner_branch = branch~load_ref();
+;;
+;;     (_, int flag) = inner_branch.begin_parse().load_uint(32);
+;;     ifnot (flag) {
+;;       _root = inner_branch;
+;;     }
+;;
+;;     if (inner_branch.cell_hash() == hash) {
+;;       return _root;
+;;     }
+;;     cell res = find_root_by_hash(hash, inner_branch, _root);
+;;
+;;     ifnot (res.begin_parse().slice_empty?()) {
+;;       return res;
+;;     }
+;;   }
+;;
+;;   return begin_cell().end_cell();
+;; }
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
@@ -40,27 +40,27 @@
     return tree;
   }
 
-  slice msg = tree.begin_parse();
-  while (msg.slice_refs_empty?() == 0) {
-    cell root = tree;
+;;   slice msg = tree.begin_parse();
+;;   while (msg.slice_refs_empty?() == 0) {
+;;     cell root = tree;
+;;
+;;     cell inner_cell = msg~load_ref();
+;;
+;;     (_, int flag) = inner_cell.begin_parse().load_uint(32);
+;;     ifnot (flag) {
+;;       root = inner_cell;
+;;     }
+;;
+;;     if (inner_cell.cell_hash() == hash) {
+;;       return root;
+;;     }
+;;
+;;     cell res = find_root_by_hash(hash, inner_cell, root);
+;;
+;;     ifnot (res.begin_parse().slice_empty?()) {
+;;       return res;
+;;     }
+;;   }
 
-    cell inner_cell = msg~load_ref();
-
-    (_, int flag) = inner_cell.begin_parse().load_uint(32);
-    ifnot (flag) {
-      root = inner_cell;
-    }
-
-    if (inner_cell.cell_hash() == hash) {
-      return root;
-    }
-
-    cell res = find_root_by_hash(hash, inner_cell, root);
-
-    ifnot (res.begin_parse().slice_empty?()) {
-      return res;
-    }
-  }
-
-  return begin_cell().end_cell();
+  return tree;
 }

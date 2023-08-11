@@ -38,7 +38,7 @@ export class Task1 implements Contract {
         });
     }
 
-    async getBranchByHash(provider: ContractProvider, options: [TupleItemInt, TupleItemCell]): Promise<any> {
+    async getBranchByHash(provider: ContractProvider, options: [TupleItemInt, TupleItemCell]): Promise<Cell> {
         const result = await provider.get('find_branch_by_hash', options);
         return result.stack.readCell();
     }

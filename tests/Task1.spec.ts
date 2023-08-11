@@ -1,4 +1,4 @@
-import { Cell, toNano } from 'ton-core';
+import { beginCell, Cell, toNano } from 'ton-core';
 
 import { compile } from '@ton-community/blueprint';
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
@@ -39,42 +39,26 @@ describe('Task1', () => {
     });
 
     it('find by hash if cell itself', async () => {
-        const cell = new Cell();
+        const cell = beginCell().storeUint(0, 32).storeUint(62, 16).endCell();
         const hashBuffer = cell.hash();
 
         const res = await task1.getBranchByHash([{type: 'int', value: BigInt('0x' + hashBuffer.toString('hex'))}, {type: 'cell', cell}]);
-        expect(res.toString()).toEqual(cell.toString());
+        expect(res).toEqualCell(cell);
     });
 
-    // it('find some nested cells', async () => {
-    //     const targetCell = new Cell();
-    //     const child2 = new Cell({
-    //         refs: [targetCell],
-    //     });
-    //     const child3 = new Cell({
-    //         refs: [child2],
-    //     });
-    //     const child4 = new Cell({
-    //         refs: [child3],
-    //     });
-    //
-    //     const cellWithChildren = new Cell({
-    //         refs: [child4],
-    //     });
-    //
-    //     const hashBuffer = targetCell.hash();
-    //
-    //     const res = await task1.getBranchByHash([{type: 'int', value: BigInt('0x' + hashBuffer.toString('hex'))}, {type: 'cell', cell: cellWithChildren}]);
-    //     expect(res.toString()).toEqual(targetCell.toString());
-    // });
+    it('find some nested cells', async () => {
+        const targetCellB = beginCell().storeUint(0, 32).storeUint(7, 32);
+        const child2B = beginCell().storeUint(2, 32).storeRef(targetCellB);
+        const child3B = beginCell().storeUint(3, 32).storeRef(child2B);
+        const child4B = beginCell().storeUint(4, 32).storeRef(child3B);
 
-    // fit('find cell by hash', async () => {
-    //     const hash = 112217716449989047460221684632076053244058804272382489846864958003834180757136n;
-    //     expect(typeof hash).toEqual('bigint');
-    //
-    //     const cell = Cell.fromBase64('B5EE9C7201024201000145000300010102030003030300020803000404040300050505030006060603000707070300080808030009090903000A0A0A03000B0B0B03000C0C0C03000D0D0D03000E0E0E03000F0F0F030010101003001111110300121212030013131303001414140300151515030016161603001717170300181818030019191903001A1A1A03001B1B1B03001C1C1C03001D1D1D03001E1E1E03001F1F1F030020202003002121210300222222030023232303002424240300252525030026262603002727270300282828030029292903002A2A2A03002B2B2B03002C2C2C03002D2D2D03002E2E2E03002F2F2F030030303003003131310300323232030033333303003434340300353535030036363603003737370300383838030039393903003A3A3A03003B3B3B03003C3C3C03003D3D3D03003E3E3E03003F3F3F030040404003004141410000');
-    //
-    //     const res = await task1.getBranchByHash([{type: 'int', value: hash}, {type: 'cell', cell}]);
-    //     expect(res).toEqual(1);
-    // });
+        const cellWithChildrenB = beginCell().storeUint(0, 32).storeUint(5, 32).storeRef(child4B);
+
+        const targetCell = targetCellB.endCell();
+        const hashBuffer = targetCell.hash();
+        const cellWithChildren = cellWithChildrenB.endCell();
+
+        const res = await task1.getBranchByHash([{type: 'int', value: BigInt('0x' + hashBuffer.toString('hex'))}, {type: 'cell', cell: cellWithChildren}]);
+        expect(res).toEqualCell(targetCell);
+    });
 });
