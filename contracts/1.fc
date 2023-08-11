@@ -37,7 +37,11 @@
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
   if (tree.cell_hash() == hash) {
-    return tree;
+    (_, int flag) = tree.begin_parse().load_uint(32);
+    if (flag) {
+      return tree;
+    }
+    return begin_cell().end_cell();
   }
 
 ;;   slice msg = tree.begin_parse();
@@ -64,3 +68,5 @@
 
   return tree;
 }
+
+;; it was 3/13 Tests Passed
