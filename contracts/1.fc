@@ -39,9 +39,9 @@
   if (tree.cell_hash() == hash) {
     (_, int flag) = tree.begin_parse().load_uint(32);
     if (flag) {
-      return tree;
+      return  begin_cell().end_cell();
     }
-    return begin_cell().end_cell();
+    return tree;
   }
 
 ;;   slice msg = tree.begin_parse();
