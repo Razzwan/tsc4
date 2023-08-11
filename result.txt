@@ -1,8 +1,10 @@
-Всего: 11.338
+Всего: 16.553
 
 Problem #1:
 Compiled: true
-Passed Tests: false
+Passed Tests: true
+GasValue: 2639839
+Points: 5.215435532999546
 
 Problem #2:
 Compiled: true
@@ -13,15 +15,15 @@ Points: 5.954293764345534
 Problem #3:
 Compiled: true
 Passed Tests: false
+0/20 Tests Passed
 
 Problem #4:
 Compiled: true
-Passed Tests: true
-GasValue: 1957237
-Points: 5.382439785026467
+Passed Tests: false
+0/133 Tests Passed
 
 Problem #5:
 Compiled: true
 Passed Tests: true
-GasValue: 1956307
-Points: 5.382614491234059
+GasValue: 1959727
+Points: 5.381972415866219
