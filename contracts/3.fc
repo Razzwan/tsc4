@@ -49,8 +49,8 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
   int valueL = ln2(value);
   slice valueSlice = begin_cell().store_uint(value, valueL).end_cell().begin_parse();
 
-  slice from = linked_list.begin_parse();
-  builder to = begin_cell();
+  slice from = linked_list.begin_parse().skip_bits(32);
+  builder to = begin_cell().store_uint(0xff, 32);
 
   int cursor = 0;
 
