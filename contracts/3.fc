@@ -31,25 +31,46 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
 () recv_internal() {
 }
 
-;; каждый элемент кортежа должен быть максимум 127 символов
-(cell) get_cell_example() method_id {
-  return begin_cell()
-    .store_uint(0, 32)
-    .store_slice("1010101010101010101")
-    .store_ref(begin_cell()
-          .store_slice("101111101010101010101010101010101010101010101")
-          .store_ref(begin_cell()
-            .store_slice("1010101010101010101010101010101010101010")
-            .end_cell())
-          .end_cell())
-    .end_cell();
+() replace_with_start(int flag, int value, cell linked_list, int start) {
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
   throw_if(1, flag <= 0);
+  throw_if(1, value <= 0);
+
+  builder to = begin_cell();
+
+  return begin_cell().store_uint(flag, 8).end_cell();
+
+;;   return end_cell(flagSlice);
+
+;;   slice from = linked_list.begin_parse();
+
+;;   int cursor = 0;
+;;   slice tempSlice = flagSlice;
+;;   while (from.slice_empty?() == 0) {
+;;     ifnot (tempSlice.slice_empty?()) {
+;;       to = store_uint(to, tempSlice~load_uint(1), 1);
+;;     }
+
+;;     cursor += 1;
+;;     to = store_uint(to, from~load_uint(1), 1);
 
 
-  return linked_list;
+;;     if (from.preload_bits(1).load_uint(1) == flagSlice.preload_bits(flagL).skip_bits(cursor)~load_uint(1)) {
+;;       cursor += 1;
+;;
+;;       if (cursor == flagL) {
+;;         to = store_uint(to, from~load_uint(cursor + 1), cursor + 1);
+;;         cursor = 0;
+;;       }
+;;     } else {
+;;       to = store_uint(to, from~load_uint(cursor + 1), cursor + 1);
+;;       cursor = 0;
+;;     }
+;;   }
+
+;;   return end_cell(to);
 }
 
