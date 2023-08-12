@@ -206,7 +206,7 @@ describe('Task4', () => {
         expect(res2).toEqualCell(cell);
     });
 
-    fit('asdfasdf', async () => {
+    it('Hello World decode', async () => {
         const str1 = 'Khoor Zruog';
 
         const cell = cellFromStr(str1);
@@ -214,11 +214,19 @@ describe('Task4', () => {
         const res1 = await task4.getDecrypt([{type: 'int', value: 29n}, {type: 'cell', cell}]);
 
         // expect(cell.beginParse().loadStringTail()).toEqual('1');
-        expect(res1.beginParse().loadStringTail()).toEqual('1');
-        // expect(res1).toEqualCell(cellFromStr(str2));
-        //
-        // const res2 = await task4.getDecrypt([{type: 'int', value: 1n}, {type: 'cell', cell: res1}]);
-        //
-        // expect(res2).toEqualCell(cell);
+        // expect(res1.beginParse().loadStringTail()).toEqual('1');
+        expect(res1).toEqualCell(cellFromStr('Hello World'));
+    });
+
+    fit('Digits', async () => {
+        const str1 = '1234567890';
+
+        const cell = cellFromStr(str1);
+
+        const res1 = await task4.getEncrypt([{type: 'int', value: 3n}, {type: 'cell', cell}]);
+
+        // expect(cell.beginParse().loadStringTail()).toEqual('1');
+        // expect(res1.beginParse().loadStringTail()).toEqual('1');
+        expect(res1).toEqualCell(cellFromStr('4567890123'));
     });
 });
