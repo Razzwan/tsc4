@@ -125,9 +125,28 @@ describe('Task3', () => {
     });
 
     describe('find_and_replace', () => {
-        fit('simplest example', async () => {
+        it('simplest example', async () => {
             const from = '10101010';
             const to = '11111111';
+
+            const cell = beginCell()
+              .storeUint(0xff, 32)
+              .storeUint(parseInt(from, 2), from.length)
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0xff, 32)
+              .storeUint(parseInt(to, 2), to.length)
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, to, cell);
+            // expect(res.beginParse().loadStringTail()).toBe(1);
+            expect(res).toEqualCell(cellRes);
+        });
+
+        it('simplest example - different sizes', async () => {
+            const from = '10101010';
+            const to = '11111111111111';
 
             const cell = beginCell()
               .storeUint(0xff, 32)
@@ -143,64 +162,67 @@ describe('Task3', () => {
             expect(res).toEqualCell(cellRes);
         });
 
-        // it('simplest example 3 times', async () => {
-        //     const from = '10101010';
-        //     const to = '11111111111111';
-        //
-        //     const target = BigInt(parseInt(from, 2));
-        //     const replacement = BigInt(parseInt(to, 2));
-        //
-        //     const cell = beginCell().storeUint(0xff, 32).storeUint(parseInt(from + from + from, 2), from.length * 3).endCell();
-        //
-        //     const cellRes = beginCell().storeUint(0xff, 32).storeUint(parseInt(to + to + to, 2), to.length * 3).endCell();
-        //
-        //     const res = await task3.getChangedLinkedList([{type: 'int', value: target}, {type: 'int', value: replacement}, {type: 'cell', cell}]);
-        //     expect(res).toEqualCell(cellRes);
-        // });
-        //
-        // it('2 cells', async () => {
-        //     const from = '110101100';
-        //     const to   = '111111111';
-        //
-        //     const c1 = '100000000000000000000000000000000000001101';
-        //     const c2 = '011000000000000000000000000000000000000000';
-        //
-        //     const r1 = '100000000000000000000000000000000000001111';
-        //     const r2 = '111110000000000000000000000000000000000000';
-        //
-        //     const target = BigInt(parseInt(from, 2));
-        //     const replacement = BigInt(parseInt(to, 2));
-        //
-        //     const cell = beginCell().storeUint(parseInt(c1, 2), c1.length).storeRef(
-        //       beginCell().storeUint(parseInt(c2, 2), c2.length)
-        //     ).endCell();
-        //
-        //     const cellRes = beginCell().storeUint(0xff, 32).storeUint(parseInt(r1, 2), r1.length).storeRef(
-        //       beginCell().storeUint(0xff, 32).storeUint(parseInt(r2, 2), r2.length)
-        //     ).endCell();
-        //
-        //     const res = await task3.getChangedLinkedList([{type: 'int', value: target}, {type: 'int', value: replacement}, {type: 'cell', cell}]);
-        //     expect(res).toEqualCell(cellRes);
-        // });
-        //
-        // it('simplest example from task description', async () => {
-        //     const target = BigInt(parseInt('101110101', 2));
-        //     const replacement = BigInt(parseInt('111111111', 2));
-        //
-        //     const v2 = '10101000111111';
-        //     const cell2 = beginCell().storeUint(parseInt(v2, 2), v2.length);
-        //
-        //     const v1 = '10100001011';
-        //     const cell1 = beginCell().storeUint(parseInt(v1, 2), v1.length).storeRef(cell2).endCell();
-        //
-        //     const res2 = '11111000111111';
-        //     const cellRes2 = beginCell().storeUint(parseInt(res2, 2), res2.length);
-        //
-        //     const res1 = '10100001111';
-        //     const cellRes1 = beginCell().storeUint(parseInt(res1, 2), res1.length).storeRef(cellRes2).endCell();
-        //
-        //     const res = await task3.getChangedLinkedList([{type: 'int', value: target}, {type: 'int', value: replacement}, {type: 'cell', cell: cell1}]);
-        //     expect(res).toEqualCell(cellRes1);
-        // });
+        it('simplest example - few entries', async () => {
+            const from = '10101010'; // 8
+            const to =   '111'; // 3
+            const strFrom = '10101010' + '1111' + '10101010' + '1111' + '10101010';
+            const strRes =  '111' + '1111' + '111' + '1111' + '111';
+
+            const cell = beginCell()
+              .storeUint(0xff, 32)
+              .storeUint(parseInt(strFrom, 2), strFrom.length)
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0xff, 32)
+              .storeUint(parseInt(strRes, 2), strRes.length)
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, to, cell);
+            // expect(res.beginParse().skip(32).loadUint(strRes.length-4).toString(2)).toEqual(1);
+            expect(res).toEqualCell(cellRes);
+        });
+
+        it('one long cell', async () => {
+            const from = '101110101';
+            const to = '111111111';
+
+            const cell = beginCell()
+              .storeUint(0xff, 32)
+              .storeUint(0, 973)
+              // .storeUint(parseInt('10100001011', 2), '10100001011'.length)
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, to, cell);
+            expect(res).toEqualCell(cell);
+        });
+
+        it('2 cells found', async () => {
+            const from = '101110101';
+            const to = '111111111';
+
+            const cell = beginCell()
+              .storeUint(0xff, 32)
+              .storeUint(0, 973)
+              .storeUint(parseInt('10100001011', 2), '10100001011'.length)
+              .storeRef(
+                beginCell()
+                  .storeUint(parseInt('10101000111111', 2), '10101000111111'.length)
+              )
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0xff, 32)
+              .storeUint(0, 973)
+              .storeUint(parseInt('10100001111', 2), '10100001111'.length)
+              .storeRef(
+                beginCell()
+                  .storeUint(parseInt('11111000111111', 2), '11111000111111'.length)
+              )
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, to, cell);
+            expect(res).toEqualCell(cellRes);
+        });
     });
 });
