@@ -11,13 +11,14 @@
 
 const MAX_ASCII = 256;
 const MIN_ASCII = 0;
+const SHIFT_TO_RIGHT = -1;
 
-(slice) shift_slice(int shift, slice tSlice, int bool) {
+(slice) shift_slice(int shift, slice tSlice) {
   builder body = begin_cell();
 
   do {
     int bit = tSlice~load_int(8);
-    if (bool) {
+    if (SHIFT_TO_RIGHT) {
       bit -= shift;
     } else {
       bit += shift;
@@ -35,14 +36,14 @@ const MIN_ASCII = 0;
   } until (tSlice.slice_data_empty?());
 
   ifnot (tSlice.slice_refs_empty?()) {
-    slice ref = shift_slice(shift, tSlice.preload_ref().begin_parse(), bool);
+    slice ref = shift_slice(shift, tSlice.preload_ref().begin_parse());
     body = store_ref(body, begin_cell().store_slice(ref).end_cell());
   }
 
   return body.end_cell().begin_parse();
 }
 
-(cell) shift_text(int shift, cell text, int bool) {
+(cell) shift_text(int shift, cell text) {
   if (shift == 0) {
     return text;
   }
@@ -50,19 +51,17 @@ const MIN_ASCII = 0;
   slice tSlice = text.begin_parse().skip_bits(32);
   return begin_cell()
           .store_uint(0, 32)
-          .store_slice(shift_slice(shift, tSlice, bool))
+          .store_slice(shift_slice(shift, tSlice))
           .end_cell();
 }
 
-const SHIFT_TO_RIGHT = 0;
-
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return shift_text(shift, text, ~ SHIFT_TO_RIGHT);
+  return shift_text(shift, text);
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return shift_text(shift, text, SHIFT_TO_RIGHT);
+  return shift_text(shift, text);
 }
 
