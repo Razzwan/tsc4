@@ -15,14 +15,11 @@ const MIN_ASCII1 = 65;
 const MAX_ASCII2 = 123;
 const MIN_ASCII2 = 97;
 
-;; const MAX_ASCII3 = 224;
-;; const MIN_ASCII3 = 192;
-
-(slice) shift_slice(int shift, slice tSlice, int bool) {
+(slice) shift_slice(int shift, slice text_slice, int bool) {
   builder body = begin_cell();
 
   do {
-    int bit = tSlice~load_uint(8);
+    int bit = text_slice~load_uint(8);
 
     if (bit < MAX_ASCII1) {
       if (bit >= MIN_ASCII1) {
@@ -60,29 +57,11 @@ const MIN_ASCII2 = 97;
       }
     }
 
-;;     if (bit < MAX_ASCII3) {
-;;       if (bit >= MIN_ASCII3) {
-;;         if (bool) {
-;;           bit -= shift % (MAX_ASCII3 - MIN_ASCII3);
-;;         } else {
-;;           bit += shift % (MAX_ASCII3 - MIN_ASCII3);
-;;         }
-;;
-;;         if (bit >= MAX_ASCII3) {
-;;           bit -= MAX_ASCII3 - MIN_ASCII3;
-;;         }
-;;
-;;         if (bit < MIN_ASCII3) {
-;;           bit += MAX_ASCII3 - MIN_ASCII3;
-;;         }
-;;       }
-;;     }
-
     body = store_int(body, bit, 8);
-  } until (tSlice.slice_data_empty?());
+  } until (text_slice.slice_data_empty?());
 
-  ifnot (tSlice.slice_refs_empty?()) {
-    slice ref = shift_slice(shift, tSlice.preload_ref().begin_parse(), bool);
+  ifnot (text_slice.slice_refs_empty?()) {
+    slice ref = shift_slice(shift, text_slice~load_ref().begin_parse(), bool);
     body = store_ref(body, begin_cell().store_slice(ref).end_cell());
   }
 
@@ -94,10 +73,10 @@ const MIN_ASCII2 = 97;
     return text;
   }
 
-  (slice tSlice, slice flag) = text.begin_parse().load_bits(32);
+  (slice text_slice, slice flag) = text.begin_parse().load_bits(32);
   return begin_cell()
           .store_slice(flag)
-          .store_slice(shift_slice(shift, tSlice, bool))
+          .store_slice(shift_slice(shift, text_slice, bool))
           .end_cell();
 }
 
