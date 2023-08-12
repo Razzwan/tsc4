@@ -8,7 +8,7 @@ import '@ton-community/test-utils';
 import { Task4 } from '../wrappers/Task4';
 
 function cellFromStr(str: string, ref?: Cell, isRoot: boolean = true): Cell {
-    if (str.length > 123) {
+    if (str.length > 127) {
         throw new Error('out of the bound 123 maximum');
     }
 
@@ -39,6 +39,8 @@ const d1 = [
 ];
 
 const d2 = ['~', ' '];
+
+const d3 = ['c', 'd'];
 
 describe('Task4', () => {
     let code: Cell;
@@ -107,6 +109,24 @@ describe('Task4', () => {
 
         const res1 = await task4.getEncrypt([{type: 'int', value: 1n}, {type: 'cell', cell}]);
 
+        // expect(res1.beginParse().loadStringTail()).toEqual('1');
+        expect(res1).toEqualCell(cellFromStr(str2));
+
+        const res2 = await task4.getDecrypt([{type: 'int', value: 1n}, {type: 'cell', cell: res1}]);
+
+        expect(res2).toEqualCell(cell);
+    });
+
+    it('caesar_cipher_encrypt shift 1 a and b', async () => {
+        const str1 = SHIFT_TO_RIGHT ? d3[0] : d3[1];
+
+        const str2 = SHIFT_TO_RIGHT ? d3[1] : d3[0];
+
+        const cell = cellFromStr(str1);
+
+        const res1 = await task4.getEncrypt([{type: 'int', value: 1n}, {type: 'cell', cell}]);
+
+        // expect(cell.beginParse().loadStringTail()).toEqual('1');
         // expect(res1.beginParse().loadStringTail()).toEqual('1');
         expect(res1).toEqualCell(cellFromStr(str2));
 
