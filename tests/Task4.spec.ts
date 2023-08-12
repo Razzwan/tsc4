@@ -15,7 +15,7 @@ function cellFromStr(str: string, ref?: Cell, isRoot: boolean = true): Cell {
     let builder = beginCell();
 
     if (isRoot) {
-        // builder = builder.storeUint(0, 32);
+        builder = builder.storeUint(0, 32);
     }
     builder = builder.storeSlice(stringToCell(str).beginParse());
 
