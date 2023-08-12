@@ -27,9 +27,9 @@ const MIN_ASCII3 = 33;
     if (bit < MAX_ASCII1) {
       if (bit >= MIN_ASCII1) {
         if (bool) {
-          bit -= shift % 26;
+          bit -= shift % (MAX_ASCII1 - MIN_ASCII1);
         } else {
-          bit += shift % 26;
+          bit += shift % (MAX_ASCII1 - MIN_ASCII1);
         }
 
         if (bit >= MAX_ASCII1) {
@@ -45,9 +45,9 @@ const MIN_ASCII3 = 33;
     if (bit < MAX_ASCII2) {
       if (bit >= MIN_ASCII2) {
         if (bool) {
-          bit -= shift % 26;
+          bit -= shift % (MAX_ASCII2 - MIN_ASCII2);
         } else {
-          bit += shift % 26;
+          bit += shift % (MAX_ASCII2 - MIN_ASCII2);
         }
 
         if (bit >= MAX_ASCII2) {
@@ -63,9 +63,9 @@ const MIN_ASCII3 = 33;
     if (bit < MAX_ASCII3) {
       if (bit >= MIN_ASCII3) {
         if (bool) {
-          bit -= shift % 10;
+          bit -= shift % (MAX_ASCII3 - MIN_ASCII3);
         } else {
-          bit += shift % 10;
+          bit += shift % (MAX_ASCII3 - MIN_ASCII3);
         }
 
         if (bit >= MAX_ASCII3) {
