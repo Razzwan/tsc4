@@ -9,8 +9,8 @@
 () recv_internal() {
 }
 
-const MAX_ASCII = 255;
-const MIN_ASCII = 0;
+const MAX_ASCII = 127;
+const MIN_ASCII = 32;
 
 (slice) shift_slice(int shift, slice tSlice, int bool) {
   builder body = begin_cell();
@@ -47,9 +47,10 @@ const MIN_ASCII = 0;
     return text;
   }
 
-  slice tSlice = text.begin_parse().skip_bits(32);
+;;   slice tSlice = text.begin_parse().skip_bits(32);
+  slice tSlice = text.begin_parse();
   return begin_cell()
-          .store_uint(0, 32)
+;;           .store_uint(0, 32)
           .store_slice(shift_slice(shift, tSlice, bool))
           .end_cell();
 }
