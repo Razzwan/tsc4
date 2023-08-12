@@ -57,7 +57,7 @@ forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
     return (begin_cell().store_uint(v, bit_len).end_cell().begin_parse(), bit_len);
 }
 
-const MAX_BITS = 1016;
+const MAX_BITS = 1023;
 
 (slice) write_data_train(slice root, int data) method_id {
     int l = root.slice_bits();
@@ -128,8 +128,8 @@ const MAX_BITS = 1016;
 
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
 
-    slice from = linked_list.begin_parse().skip_bits(32);
-    slice to = begin_cell().store_uint(0xff, 32).end_cell().begin_parse();
+    slice from = linked_list.begin_parse();
+    slice to = begin_cell().end_cell().begin_parse();
 
     int cursor = 0;
     slice buf = begin_cell().end_cell().begin_parse();

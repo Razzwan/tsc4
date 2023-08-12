@@ -41,7 +41,6 @@ describe('Task3', () => {
     describe('write_data_train', () => {
         it('write bit data to single cell', async () => {
             const cell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(15, 45)
               .endCell();
             const data = '1010001001010';
@@ -49,7 +48,6 @@ describe('Task3', () => {
             const res = await task3.getWriteDataTrain(cell, data);
 
             const resCell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(15, 45)
               .storeUint(parseInt(data, 2), data.length)
               .endCell();
@@ -58,7 +56,6 @@ describe('Task3', () => {
 
         it('parent slice not fool', async () => {
             const cell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(15, 980)
               .endCell();
             const data = '110110101010101010001';
@@ -66,7 +63,6 @@ describe('Task3', () => {
             const res = await task3.getWriteDataTrain(cell, data);
 
             const resCell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(15, 980)
               .storeUint(parseInt('1101', 2), 4)
               .storeRef(
@@ -79,7 +75,6 @@ describe('Task3', () => {
 
         it('parent slice with ref', async () => {
             const cell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(15, 984)
               .storeRef(beginCell().storeUint(32, 1000))
               .endCell();
@@ -88,7 +83,6 @@ describe('Task3', () => {
             const res = await task3.getWriteDataTrain(cell, data);
 
             const resCell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(15, 984)
               .storeRef(
                 beginCell()
@@ -105,7 +99,6 @@ describe('Task3', () => {
 
         it('parent slice exactly fool', async () => {
             const cell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(15, 984)
               .endCell();
             const data = '110110101010101010001';
@@ -113,7 +106,6 @@ describe('Task3', () => {
             const res = await task3.getWriteDataTrain(cell, data);
 
             const resCell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(15, 984)
               .storeRef(
                 beginCell()
@@ -130,7 +122,6 @@ describe('Task3', () => {
             const to = '11111111';
 
             const cell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(parseInt(from, 2), from.length)
               .endCell();
 
@@ -149,12 +140,10 @@ describe('Task3', () => {
             const to = '11111111111111';
 
             const cell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(parseInt(from, 2), from.length)
               .endCell();
 
             const cellRes = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(parseInt(to, 2), to.length)
               .endCell();
 
@@ -169,7 +158,6 @@ describe('Task3', () => {
             const strRes =  '111' + '1111' + '111' + '1111' + '111';
 
             const cell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(parseInt(strFrom, 2), strFrom.length)
               .endCell();
 
@@ -188,7 +176,6 @@ describe('Task3', () => {
             const to = '111111111';
 
             const cell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(0, 973)
               // .storeUint(parseInt('10100001011', 2), '10100001011'.length)
               .endCell();
@@ -202,7 +189,6 @@ describe('Task3', () => {
             const to = '111111111';
 
             const cell = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(0, 973)
               .storeUint(parseInt('10100001011', 2), '10100001011'.length)
               .storeRef(
@@ -212,7 +198,6 @@ describe('Task3', () => {
               .endCell();
 
             const cellRes = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(0, 973)
               .storeUint(parseInt('10100001111', 2), '10100001111'.length)
               .storeRef(
