@@ -23,26 +23,13 @@ const MIN_ASCII3 = 32;
 
   do {
     int bit = tSlice~load_uint(8);
-    if (bit < MAX_ASCII3) {
-      if (bool) {
-        bit -= shift;
-      } else {
-        bit += shift;
-      }
 
-      if (bit >= MAX_ASCII3) {
-        bit -= MAX_ASCII3 - MIN_ASCII3;
-      }
-
-      if (bit < MIN_ASCII3) {
-        bit += MAX_ASCII3 - MIN_ASCII3;
-      }
-    } else {
-      if (bit < MAX_ASCII1) {
+    if (bit < MAX_ASCII1) {
+      if (bit >= MIN_ASCII1) {
         if (bool) {
-          bit -= shift;
+          bit -= shift % 26;
         } else {
-          bit += shift;
+          bit += shift % 26;
         }
 
         if (bit >= MAX_ASCII1) {
@@ -52,11 +39,15 @@ const MIN_ASCII3 = 32;
         if (bit < MIN_ASCII1) {
           bit += MAX_ASCII1 - MIN_ASCII1;
         }
-      } else {
+      }
+    }
+
+    if (bit < MAX_ASCII2) {
+      if (bit >= MIN_ASCII2) {
         if (bool) {
-          bit -= shift;
+          bit -= shift % 26;
         } else {
-          bit += shift;
+          bit += shift % 26;
         }
 
         if (bit >= MAX_ASCII2) {
