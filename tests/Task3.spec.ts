@@ -189,7 +189,7 @@ describe('Task3', () => {
             const to = '111111111';
 
             const cell = beginCell()
-              .storeUint(0, 973)
+              .storeUint(0, 1012)
               .storeUint(parseInt('10100001011', 2), '10100001011'.length)
               .storeRef(
                 beginCell()
@@ -198,7 +198,7 @@ describe('Task3', () => {
               .endCell();
 
             const cellRes = beginCell()
-              .storeUint(0, 973)
+              .storeUint(0, 1012)
               .storeUint(parseInt('10100001111', 2), '10100001111'.length)
               .storeRef(
                 beginCell()
