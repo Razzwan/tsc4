@@ -60,23 +60,23 @@ const MIN_ASCII3 = 33;
       }
     }
 
-;;     if (bit < MAX_ASCII3) {
-;;       if (bit >= MIN_ASCII3) {
-;;         if (bool) {
-;;           bit -= shift % 10;
-;;         } else {
-;;           bit += shift % 10;
-;;         }
-;;
-;;         if (bit >= MAX_ASCII3) {
-;;           bit -= MAX_ASCII3 - MIN_ASCII3;
-;;         }
-;;
-;;         if (bit < MIN_ASCII3) {
-;;           bit += MAX_ASCII3 - MIN_ASCII3;
-;;         }
-;;       }
-;;     }
+    if (bit < MAX_ASCII3) {
+      if (bit >= MIN_ASCII3) {
+        if (bool) {
+          bit -= shift % 10;
+        } else {
+          bit += shift % 10;
+        }
+
+        if (bit >= MAX_ASCII3) {
+          bit -= MAX_ASCII3 - MIN_ASCII3;
+        }
+
+        if (bit < MIN_ASCII3) {
+          bit += MAX_ASCII3 - MIN_ASCII3;
+        }
+      }
+    }
 
     body = store_int(body, bit, 8);
   } until (tSlice.slice_data_empty?());
