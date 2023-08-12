@@ -15,8 +15,8 @@ const MIN_ASCII1 = 65;
 const MAX_ASCII2 = 123;
 const MIN_ASCII2 = 97;
 
-const MAX_ASCII3 = 58;
-const MIN_ASCII3 = 48;
+const MAX_ASCII3 = 48;
+const MIN_ASCII3 = 33;
 
 (slice) shift_slice(int shift, slice tSlice, int bool) {
   builder body = begin_cell();
@@ -60,23 +60,23 @@ const MIN_ASCII3 = 48;
       }
     }
 
-    if (bit < MAX_ASCII3) {
-      if (bit >= MIN_ASCII3) {
-        if (bool) {
-          bit -= shift % 10;
-        } else {
-          bit += shift % 10;
-        }
-
-        if (bit >= MAX_ASCII3) {
-          bit -= MAX_ASCII3 - MIN_ASCII3;
-        }
-
-        if (bit < MIN_ASCII3) {
-          bit += MAX_ASCII3 - MIN_ASCII3;
-        }
-      }
-    }
+;;     if (bit < MAX_ASCII3) {
+;;       if (bit >= MIN_ASCII3) {
+;;         if (bool) {
+;;           bit -= shift % 10;
+;;         } else {
+;;           bit += shift % 10;
+;;         }
+;;
+;;         if (bit >= MAX_ASCII3) {
+;;           bit -= MAX_ASCII3 - MIN_ASCII3;
+;;         }
+;;
+;;         if (bit < MIN_ASCII3) {
+;;           bit += MAX_ASCII3 - MIN_ASCII3;
+;;         }
+;;       }
+;;     }
 
     body = store_int(body, bit, 8);
   } until (tSlice.slice_data_empty?());
