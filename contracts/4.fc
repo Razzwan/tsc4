@@ -9,7 +9,7 @@
 () recv_internal() {
 }
 
-const MAX_ASCII = 127;
+const MAX_ASCII = 128;
 const MIN_ASCII = 33;
 
 (slice) shift_slice(int shift, slice tSlice, int bool) {
