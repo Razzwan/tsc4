@@ -9,6 +9,9 @@
 () recv_internal() {
 }
 
+const MAX_ASCII = 127;
+const MIN_ASCII = 33;
+
 (slice) shift_slice(int shift, slice tSlice, int bool) {
   builder body = begin_cell();
 
@@ -20,12 +23,12 @@
       bit += shift;
     }
 
-    if (bit > 126) {
-      bit -= 95;
+    if (bit >= MAX_ASCII) {
+      bit -= MAX_ASCII - MIN_ASCII;
     }
 
-    if (bit < 32) {
-      bit += 95;
+    if (bit < MIN_ASCII) {
+      bit += MAX_ASCII - MIN_ASCII;
     }
 
     body = store_int(body, bit, 8);

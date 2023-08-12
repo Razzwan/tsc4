@@ -6,8 +6,8 @@ import {
     contractAddress,
     ContractProvider,
     Sender,
-    SendMode,
-    TupleItemCell, TupleItemInt
+    SendMode, Slice, Tuple,
+    TupleItemCell, TupleItemInt, TupleReader
 } from 'ton-core';
 import {TupleItemSlice} from 'ton-core/dist/tuple/tuple';
 
@@ -36,6 +36,11 @@ export class Task3 implements Contract {
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell().endCell(),
         });
+    }
+
+    async getWriteDataChain(provider: ContractProvider, options: [Tuple, TupleItemInt]): Promise<any> {
+        const result = await provider.get('write_data_train', options);
+        return result.stack.readTuple();
     }
 
     async getChangedLinkedList(provider: ContractProvider, options: [TupleItemInt, TupleItemInt, TupleItemCell]): Promise<any> {
