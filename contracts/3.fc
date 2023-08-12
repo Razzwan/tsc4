@@ -23,122 +23,143 @@
 forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
 
 (tuple) reverse_tuple (tuple t1) {
-  tuple t2 = empty_tuple();
-  repeat (t1.tlen()) {
-    var value = t1~tpop();
-    t2~tpush(value);
-  }
-  return t2;
+    tuple t2 = empty_tuple();
+    repeat (t1.tlen()) {
+        var value = t1~tpop();
+        t2~tpush(value);
+    }
+    return t2;
 }
 
 (int) ln2(int t) {
-  int i = 0;
-  int r = t;
-  while (r > 0) {
-    r = r >> 1;
-    i += 1;
-  }
-  return i;
+    int i = 0;
+    int r = t;
+    while (r > 0) {
+        r = r >> 1;
+        i += 1;
+    }
+    return i;
 }
 
 (int) get_ns_bit(slice s, int len, int skip) {
-  (_, int r) = load_uint(s.preload_bits(len).skip_bits(skip), 1);
-  return r;
+    if (skip > s.slice_bits()) {
+        return s~load_ref().begin_parse().get_ns_bit(len, skip - s.slice_bits());
+    }
+    (_, int r) = load_uint(s.preload_bits(len).skip_bits(skip), 1);
+    return r;
 }
 
 (slice, int) slice_and_len_from_int(int v) {
-  int bit_len = ln2(v);
-  return (begin_cell().store_uint(v, bit_len).end_cell().begin_parse(), bit_len);
-}
-
-(slice, builder) write_data_offset(slice s, builder b, int data, int offset) {
-  return (s.skip_bits(offset), store_uint(b, data, ln2(data)));
+    int bit_len = ln2(v);
+    return (begin_cell().store_uint(v, bit_len).end_cell().begin_parse(), bit_len);
 }
 
 const MAX_BITS = 1016;
 
-(tuple) write_data_train(tuple cells_train, int data) method_id {
-  builder last_cell = begin_cell();
+(slice) write_data_train(slice root, int data) method_id {
+    int l = root.slice_bits();
+    int data_len = ln2(data);
+    if (l == MAX_BITS) {
+        if (root.slice_refs_empty?()) {
+            return begin_cell()
+                    .store_slice(root)
+                    .store_ref(
+                            begin_cell()
+                                    .store_slice(write_data_train(
+                                            begin_cell().end_cell().begin_parse(),
+                                            data
+                                    ))
+                                    .end_cell()
+                    )
+                    .end_cell()
+                    .begin_parse();
+        } else {
+            return begin_cell()
+                    .store_slice(root)
+                    .store_ref(
+                            begin_cell()
+                                    .store_slice(write_data_train(root~load_ref().begin_parse(), data))
+                                    .end_cell()
+                    )
+                    .end_cell()
+                    .begin_parse();
+        }
+    }
 
-  if (cells_train.tlen() > 0) {
-    last_cell = cells_train~tpop();
-  }
+    if (l + data_len <= MAX_BITS) {
+        return begin_cell()
+                .store_slice(root)
+                .store_uint(data, data_len)
+                .end_cell().begin_parse();
+    }
 
-  int last_cell_len = end_cell(last_cell).begin_parse().slice_bits();
+    slice data_slice = begin_cell()
+            .store_uint(data, data_len)
+            .end_cell()
+            .begin_parse();
 
-  int data_len = ln2(data);
+    int first = data_slice~load_uint(MAX_BITS - l);
+    int last = data_slice~load_uint(data_len - MAX_BITS + l);
 
-  if (data_len + last_cell_len <= MAX_BITS) {
-    last_cell = store_uint(last_cell, data, data_len);
-    cells_train~tpush(last_cell);
-    return cells_train;
-  }
-
-  int portion = MAX_BITS - last_cell_len;
-  while (portion > 0) {
-
-  }
-
-  return cells_train;
+    return begin_cell()
+            .store_slice(root)
+            .store_uint(first, MAX_BITS - l)
+            .store_ref(
+                    begin_cell()
+                            .store_slice(write_data_train(
+                                    begin_cell().end_cell().begin_parse(),
+                                    last
+                            ))
+                            .end_cell()
+            )
+            .end_cell()
+            .begin_parse();
 }
-
-;;   slice data_slice = begin_cell().store_uint(data, data_len).end_cell().begin_parse();
-;;
-;;   int l = 127 - i;
-;;
-;;   builder n = begin_cell().store_slice(s).store_uint(data_slice~load_uint(l), l);
-;;
-;;   if (cells_chain.tlen()) {
-;;     builder parent = cells_chain~tpop();
-;;     parent = parent.store_ref(end_cell(n)).end_cell();
-;;     cells_chain~tpush(parent);
-;;     cells_chain~tpush(begin_cell());
-;;   } else {
-;;     cells_chain~tpush(n);
-;;   }
-;;
-;; }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  throw_if(1, flag <= 0);
-  throw_if(1, value <= 0);
+    throw_if(1, flag <= 0);
+    throw_if(1, value <= 0);
 
-  (slice flag__slice, int flag__len) = slice_and_len_from_int(flag);
+    (slice f_slice, int f_len) = slice_and_len_from_int(flag);
 
-  (slice value_slice, int value_len) = slice_and_len_from_int(value);
+    (slice v_slice, int v_len) = slice_and_len_from_int(value);
 
-  slice from_______ = linked_list.begin_parse().skip_bits(32);
-  builder to = begin_cell().store_uint(0xff, 32);
+    slice from = linked_list.begin_parse().skip_bits(32);
+    slice to = begin_cell().store_uint(0xff, 32).end_cell().begin_parse();
 
-  int cursor = 0;
+    int cursor = 0;
 
-  while (from_______.slice_data_empty?() == 0) {
-    ;; если поиск еще должен продолжаться, а данные в текущей ячейке уже закончились
-    if (from_______.slice_bits() < cursor) {
-      return end_cell(to);
+    while (from.slice_data_empty?() == 0) {
+        int fromBit = get_ns_bit(from, f_len, cursor);
+        int targBit = get_ns_bit(f_slice, f_len, cursor);
+
+        if (fromBit == targBit) {
+            cursor += 1;
+
+            if (cursor == f_len) {
+                to = to.write_data_train(value);
+                from~load_uint(cursor);
+                cursor = 0;
+            }
+        } else {
+            to = to.write_data_train(from~load_uint(cursor + 1));
+            cursor = 0;
+        }
+
+        if (cursor == from.slice_bits()) {
+            if (from.slice_refs_empty?()) {
+                to = to.write_data_train(from~load_uint(cursor));
+                cursor = 0;
+            } else {
+                from = from~load_ref().begin_parse();
+            }
+        }
     }
 
-    int fromBit = get_ns_bit(from_______, flag__len, cursor);
-    int targBit = get_ns_bit(flag__slice, flag__len, cursor);
-
-    if (fromBit == targBit) {
-      cursor += 1;
-
-      if (cursor == flag__len) {
-        (from_______, to) = write_data_offset(from_______, to, value, cursor);
-        cursor = 0;
-      }
-
-    } else {
-      to = store_uint(to, from_______~load_uint(cursor + 1), cursor + 1);
-      cursor = 0;
+    if (cursor) {
+        to = to.write_data_train(from~load_uint(cursor));
     }
-  }
 
-  if (cursor) {
-    to = store_uint(to, from_______~load_uint(cursor), cursor);
-  }
-
-  return end_cell(to);
+    return begin_cell().store_slice(to).end_cell();
 }
