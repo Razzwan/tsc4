@@ -42,6 +42,10 @@ const d2 = ['~', ' '];
 
 const d3 = ['c', 'd'];
 
+const d4 = ['ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'BCDEFGHIJKLMNOPQRSTUVWXYZA'];
+
+const d5 = ['abcdefghijklmnopqrstuvwxyz', 'bcdefghijklmnopqrstuvwxyza'];
+
 describe('Task4', () => {
     let code: Cell;
 
@@ -164,5 +168,41 @@ describe('Task4', () => {
 
         expect(res1).toEqualCell(cell_2_1);
 
+    });
+
+    it('caesar_cipher_encrypt shift 1 upper letters only', async () => {
+        const str1 = SHIFT_TO_RIGHT ? d4[0] : d4[1];
+
+        const str2 = SHIFT_TO_RIGHT ? d4[1] : d4[0];
+
+        const cell = cellFromStr(str1);
+
+        const res1 = await task4.getEncrypt([{type: 'int', value: 1n}, {type: 'cell', cell}]);
+
+        // expect(cell.beginParse().loadStringTail()).toEqual('1');
+        // expect(res1.beginParse().loadStringTail()).toEqual('1');
+        expect(res1).toEqualCell(cellFromStr(str2));
+
+        const res2 = await task4.getDecrypt([{type: 'int', value: 1n}, {type: 'cell', cell: res1}]);
+
+        expect(res2).toEqualCell(cell);
+    });
+
+    fit('caesar_cipher_encrypt shift 1 lower letters only', async () => {
+        const str1 = SHIFT_TO_RIGHT ? d5[0] : d5[1];
+
+        const str2 = SHIFT_TO_RIGHT ? d5[1] : d5[0];
+
+        const cell = cellFromStr(str1);
+
+        const res1 = await task4.getEncrypt([{type: 'int', value: 1n}, {type: 'cell', cell}]);
+
+        // expect(cell.beginParse().loadStringTail()).toEqual('1');
+        // expect(res1.beginParse().loadStringTail()).toEqual('1');
+        expect(res1).toEqualCell(cellFromStr(str2));
+
+        const res2 = await task4.getDecrypt([{type: 'int', value: 1n}, {type: 'cell', cell: res1}]);
+
+        expect(res2).toEqualCell(cell);
     });
 });
