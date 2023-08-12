@@ -218,7 +218,7 @@ describe('Task4', () => {
         expect(res1).toEqualCell(cellFromStr('Hello World'));
     });
 
-    fit('Digits', async () => {
+    it('Digits', async () => {
         const str1 = '1234567890';
 
         const cell = cellFromStr(str1);
@@ -228,5 +228,17 @@ describe('Task4', () => {
         // expect(cell.beginParse().loadStringTail()).toEqual('1');
         // expect(res1.beginParse().loadStringTail()).toEqual('1');
         expect(res1).toEqualCell(cellFromStr('4567890123'));
+    });
+
+    fit('Digits', async () => {
+        const str1 = 'АБ';
+
+        const cell = cellFromStr(str1);
+
+        const res1 = await task4.getEncrypt([{type: 'int', value: 1n}, {type: 'cell', cell}]);
+
+        // expect(cell.beginParse().loadStringTail()).toEqual('1');
+        // expect(res1.beginParse().loadStringTail()).toEqual('1');
+        expect(res1).toEqualCell(cellFromStr('asdfasdf'));
     });
 });
