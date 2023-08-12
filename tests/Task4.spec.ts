@@ -206,7 +206,7 @@ describe('Task4', () => {
         expect(res2).toEqualCell(cell);
     });
 
-    it('Hello World decode', async () => {
+    fit('Hello World decode', async () => {
         const str1 = 'Khoor Zruog';
 
         const cell = cellFromStr(str1);
@@ -230,7 +230,7 @@ describe('Task4', () => {
         expect(res1).toEqualCell(cellFromStr('4567890123'));
     });
 
-    fit('Digits', async () => {
+    it('Digits', async () => {
         const str1 = 'АБ';
 
         const cell = cellFromStr(str1);

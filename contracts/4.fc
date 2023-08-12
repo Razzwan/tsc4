@@ -96,7 +96,7 @@ const MIN_ASCII2 = 97;
 
   (slice tSlice, slice flag) = text.begin_parse().load_bits(32);
   return begin_cell()
-          .store_uint(flag, 32)
+          .store_slice(flag)
           .store_slice(shift_slice(shift, tSlice, bool))
           .end_cell();
 }
