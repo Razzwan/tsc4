@@ -57,12 +57,13 @@ const MIN_ASCII2 = 97;
       }
     }
 
-    body = store_int(body, bit, 8);
+    body = store_uint(body, bit, 8);
   } until (text_slice.slice_data_empty?());
 
   ifnot (text_slice.slice_refs_empty?()) {
-    slice ref = shift_slice(shift, text_slice~load_ref().begin_parse(), bool);
-    body = store_ref(body, begin_cell().store_slice(ref).end_cell());
+    body = store_ref(body, begin_cell().store_slice(
+            shift_slice(shift, text_slice~load_ref().begin_parse(), bool)
+    ).end_cell());
   }
 
   return body.end_cell().begin_parse();
