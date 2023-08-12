@@ -54,13 +54,15 @@ const MIN_ASCII = 33;
           .end_cell();
 }
 
+const SHIFT_TO_RIGHT = 0;
+
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return shift_text(shift, text, false);
+  return shift_text(shift, text, ~ SHIFT_TO_RIGHT);
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return shift_text(shift, text, true);
+  return shift_text(shift, text, SHIFT_TO_RIGHT);
 }
 
