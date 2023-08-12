@@ -9,8 +9,8 @@
 () recv_internal() {
 }
 
-const MAX_ASCII = 128;
-const MIN_ASCII = 32;
+const MAX_ASCII = 255;
+const MIN_ASCII = 0;
 
 (slice) shift_slice(int shift, slice tSlice, int bool) {
   builder body = begin_cell();
