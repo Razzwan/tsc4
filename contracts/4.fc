@@ -15,38 +15,57 @@ const MIN_ASCII1 = 65;
 const MAX_ASCII2 = 123;
 const MIN_ASCII2 = 97;
 
+const MAX_ASCII3 = 65;
+const MIN_ASCII3 = 32;
+
 (slice) shift_slice(int shift, slice tSlice, int bool) {
   builder body = begin_cell();
 
   do {
     int bit = tSlice~load_uint(8);
-    if (bit < MAX_ASCII1) {
+    if (bit < MAX_ASCII3) {
       if (bool) {
         bit -= shift;
       } else {
         bit += shift;
       }
 
-      if (bit >= MAX_ASCII1) {
-        bit -= MAX_ASCII1 - MIN_ASCII1;
+      if (bit >= MAX_ASCII3) {
+        bit -= MAX_ASCII3 - MIN_ASCII3;
       }
 
-      if (bit < MIN_ASCII1) {
-        bit += MAX_ASCII1 - MIN_ASCII1;
+      if (bit < MIN_ASCII3) {
+        bit += MAX_ASCII3 - MIN_ASCII3;
       }
     } else {
-      if (bool) {
-        bit -= shift;
+      if (bit < MAX_ASCII1) {
+        if (bool) {
+          bit -= shift;
+        } else {
+          bit += shift;
+        }
+
+        if (bit >= MAX_ASCII1) {
+          bit -= MAX_ASCII1 - MIN_ASCII1;
+        }
+
+        if (bit < MIN_ASCII1) {
+          bit += MAX_ASCII1 - MIN_ASCII1;
+        }
       } else {
-        bit += shift;
-      }
+        if (bool) {
+          bit -= shift;
+        } else {
+          bit += shift;
+        }
 
-      if (bit >= MAX_ASCII2) {
-        bit -= MAX_ASCII2 - MIN_ASCII2;
-      }
+        if (bit >= MAX_ASCII2) {
+          bit -= MAX_ASCII2 - MIN_ASCII2;
+        }
 
-      if (bit < MIN_ASCII2) {
-        bit += MAX_ASCII2 - MIN_ASCII2;
+        if (bit < MIN_ASCII2) {
+          bit += MAX_ASCII2 - MIN_ASCII2;
+        }
       }
     }
 
@@ -73,7 +92,7 @@ const MIN_ASCII2 = 97;
           .end_cell();
 }
 
-const SHIFT_TO_RIGHT = 0;
+const SHIFT_TO_RIGHT = -1;
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {

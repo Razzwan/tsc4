@@ -170,7 +170,7 @@ describe('Task4', () => {
 
     });
 
-    it('caesar_cipher_encrypt shift 1 upper letters only', async () => {
+    fit('caesar_cipher_encrypt shift 1 upper letters only', async () => {
         const str1 = SHIFT_TO_RIGHT ? d4[0] : d4[1];
 
         const str2 = SHIFT_TO_RIGHT ? d4[1] : d4[0];
@@ -188,7 +188,7 @@ describe('Task4', () => {
         expect(res2).toEqualCell(cell);
     });
 
-    fit('caesar_cipher_encrypt shift 1 lower letters only', async () => {
+    it('caesar_cipher_encrypt shift 1 lower letters only', async () => {
         const str1 = SHIFT_TO_RIGHT ? d5[0] : d5[1];
 
         const str2 = SHIFT_TO_RIGHT ? d5[1] : d5[0];
