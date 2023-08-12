@@ -11,11 +11,12 @@
 
 const MAX_ASCII1 = 91;
 const MIN_ASCII1 = 65;
+const RANGE = 26;
 
 const MAX_ASCII2 = 123;
 const MIN_ASCII2 = 97;
 
-(slice) shift_slice(int shift, slice text_slice, int bool) {
+(slice) shift_slice(int shift, slice text_slice) {
   builder body = begin_cell();
 
   do {
@@ -23,36 +24,20 @@ const MIN_ASCII2 = 97;
 
     if (bit < MAX_ASCII1) {
       if (bit >= MIN_ASCII1) {
-        if (bool) {
-          bit -= shift % (MAX_ASCII1 - MIN_ASCII1);
-        } else {
-          bit += shift % (MAX_ASCII1 - MIN_ASCII1);
-        }
+        bit += shift;
 
         if (bit >= MAX_ASCII1) {
-          bit -= MAX_ASCII1 - MIN_ASCII1;
-        }
-
-        if (bit < MIN_ASCII1) {
-          bit += MAX_ASCII1 - MIN_ASCII1;
+          bit -= RANGE;
         }
       }
     }
 
     if (bit < MAX_ASCII2) {
       if (bit >= MIN_ASCII2) {
-        if (bool) {
-          bit -= shift % (MAX_ASCII2 - MIN_ASCII2);
-        } else {
-          bit += shift % (MAX_ASCII2 - MIN_ASCII2);
-        }
+        bit += shift;
 
         if (bit >= MAX_ASCII2) {
-          bit -= MAX_ASCII2 - MIN_ASCII2;
-        }
-
-        if (bit < MIN_ASCII2) {
-          bit += MAX_ASCII2 - MIN_ASCII2;
+          bit -= RANGE;
         }
       }
     }
@@ -62,34 +47,33 @@ const MIN_ASCII2 = 97;
 
   ifnot (text_slice.slice_refs_empty?()) {
     body = store_ref(body, begin_cell().store_slice(
-            shift_slice(shift, text_slice~load_ref().begin_parse(), bool)
+      shift_slice(shift, text_slice~load_ref().begin_parse())
     ).end_cell());
   }
 
   return body.end_cell().begin_parse();
 }
 
-(cell) shift_text(int shift, cell text, int bool) {
-  if (shift % 26 == 0) {
+(cell) shift_text(int shift, cell text) inline {
+  shift = shift % RANGE;
+  if (shift == 0) {
     return text;
   }
 
   (slice text_slice, slice flag) = text.begin_parse().load_bits(32);
   return begin_cell()
           .store_slice(flag)
-          .store_slice(shift_slice(shift, text_slice, bool))
+          .store_slice(shift_slice(shift, text_slice))
           .end_cell();
 }
 
-const SHIFT_TO_RIGHT = -1;
-
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return shift_text(shift, text, ~ SHIFT_TO_RIGHT);
+  return shift_text(shift, text);
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return shift_text(shift, text, SHIFT_TO_RIGHT);
+  return caesar_cipher_encrypt(RANGE - shift, text);
 }
 
