@@ -131,8 +131,9 @@ const MAX_BITS = 1023;
     (slice f_slice, int f_len) = slice_and_len_from_int(flag);
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
 
-    (slice from, int from_bit) = (linked_list.begin_parse(), 0);
-    slice to = begin_cell().end_cell().begin_parse();
+    (slice from, slice flag) = linked_list.begin_parse().load_bits(32);
+    int from_bit = 0;
+    slice to = begin_cell().store_slice(flag).end_cell().begin_parse();
 
     int cursor = 0;
     slice buf = begin_cell().end_cell().begin_parse();
