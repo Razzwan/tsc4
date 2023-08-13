@@ -23,6 +23,10 @@ const striInEnd = (str: string, len: number) => {
 const parseRes = (res: Cell): string => {
     const firstLen = res.beginParse().remainingBits;
     if (res.beginParse().remainingRefs) {
+
+        console.log('parseRes >>>>>>> ', {
+            firstLen,
+        });
         return striInEnd(res.beginParse().loadUint(firstLen).toString(2), firstLen) + parseRes((res.beginParse().loadRef() as any));
     }
 
@@ -63,102 +67,6 @@ describe('Task3', () => {
         // the check is done inside beforeEach
         // blockchain and task3 are ready to use
     });
-
-    // describe('write_data_train', () => {
-    //     it('write bit data to single cell', async () => {
-    //         const cell = beginCell()
-    //           .storeUint(15, 45)
-    //           .endCell();
-    //         const data = 0b1010001001010;
-    //
-    //         const res = await task3.getWriteDataTrain(cell, data, lg2(data));
-    //
-    //         const resCell = beginCell()
-    //           .storeUint(15, 45)
-    //           .storeUint(data, lg2(data))
-    //           .endCell();
-    //         expect(res).toEqualCell(resCell);
-    //     });
-    //
-    //     it('parent slice not full', async () => {
-    //         const cell = beginCell()
-    //           .storeUint(15, 1019)
-    //           .endCell();
-    //         const data = 0b110110101010101010001;
-    //
-    //         const res = await task3.getWriteDataTrain(cell, data, lg2(data));
-    //
-    //         const resCell = beginCell()
-    //           .storeUint(15, 1019)
-    //           .storeUint(0b1101, 4)
-    //           .storeRef(
-    //             beginCell()
-    //               .storeUint(0b10101010101010001, lg2(0b10101010101010001))
-    //           )
-    //           .endCell();
-    //         expect(res).toEqualCell(resCell);
-    //     });
-    //
-    //     it('parent slice with ref', async () => {
-    //         const cell = beginCell()
-    //           .storeUint(15, 1023)
-    //           .storeRef(beginCell().storeUint(32, 1007))
-    //           .endCell();
-    //         const data = 0b110110101010101010001;
-    //
-    //         const res = await task3.getWriteDataTrain(cell, data, lg2(data));
-    //
-    //         const resCell = beginCell()
-    //           .storeUint(15, 1023)
-    //           .storeRef(
-    //             beginCell()
-    //               .storeUint(32, 1007)
-    //               .storeUint(0b1101101010101010, lg2(0b1101101010101010))
-    //               .storeRef(
-    //                 beginCell()
-    //                   .storeUint(0b10001, lg2(0b10001))
-    //               )
-    //           )
-    //           .endCell();
-    //         expect(res).toEqualCell(resCell);
-    //     });
-    //
-    //     it('parent slice exactly full', async () => {
-    //         const cell = beginCell()
-    //           .storeUint(15, 1023)
-    //           .endCell();
-    //         const data = 0b110110101010101010001;
-    //
-    //         const res = await task3.getWriteDataTrain(cell, data, lg2(data));
-    //
-    //         const resCell = beginCell()
-    //           .storeUint(15, 1023)
-    //           .storeRef(
-    //             beginCell()
-    //               .storeUint(data, lg2(data))
-    //           )
-    //           .endCell();
-    //         expect(res).toEqualCell(resCell);
-    //     });
-    //
-    //     it('third van', async () => {
-    //         const cell = beginCell()
-    //           .storeUint(15, 1023)
-    //           .storeRef(beginCell().storeUint(19, 1022))
-    //           .endCell();
-    //         const data = 0b101;
-    //
-    //         const res = await task3.getWriteDataTrain(cell, data, lg2(data));
-    //
-    //         const resCell = beginCell()
-    //           .storeUint(15, 1023)
-    //           .storeRef(beginCell().storeUint(19, 1022).storeUint(0b1, 1).storeRef(
-    //             beginCell().storeUint(0b1, 2)
-    //           ))
-    //           .endCell();
-    //         expect(res).toEqualCell(resCell);
-    //     });
-    // });
 
     describe('find_and_replace', () => {
         it('simplest example', async () => {
@@ -291,6 +199,44 @@ describe('Task3', () => {
               .storeRef(
                 beginCell()
                   .storeUint(0b1001000000, lg2(0b1001000000))
+              )
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, to, cell);
+
+            console.log('res', parseRes(res));
+            expect(res).toEqualCell(cellRes);
+        });
+
+        it('3 cells found starts with 0 and ends with 0', async () => {
+            const from = 0b10001;
+            const to = 0b1001;
+
+            const cell = beginCell()
+              .storeUint(0, 1021)
+              .storeUint(0b10, 2)
+              .storeRef(
+                beginCell()
+                  .storeUint(0b1000000, 9)
+                  .storeUint(1, 1014)
+                  .storeRef(
+                    beginCell()
+                      .storeUint(1, 32)
+                  )
+              )
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0, 1021)
+              .storeRef(
+                beginCell()
+                  .storeUint(0b1001000000, 10)
+                  .storeUint(0, 1013)
+                  .storeRef(
+                    beginCell()
+                      .storeUint(1, 1)
+                      .storeUint(1, 32)
+                  )
               )
               .endCell();
 

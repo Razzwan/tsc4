@@ -16,9 +16,6 @@
 
 -}
 
-() recv_internal() {
-}
-
 const MAX_BITS = 1023;
 
 (int) bits_from_int(int t) {
@@ -56,13 +53,13 @@ const MAX_BITS = 1023;
                 ;; TODO: возможно нужно разбить буфер на части
                 ;; и записать часть в текущий builder "to"
                 return to.store_ref(write_slice(
-                        begin_cell().end_cell().begin_parse(),
-                        f_slice,
-                        f_len,
-                        v_slice,
-                        v_len,
-                        from,
-                        begin_cell().store_slice(buffer).store_uint(from_bit, 1)
+                    begin_cell().end_cell().begin_parse(),
+                    f_slice,
+                    f_len,
+                    v_slice,
+                    v_len,
+                    from,
+                    begin_cell().store_slice(buffer).store_uint(from_bit, 1)
                 ).end_cell());
             }
         } else {
@@ -73,13 +70,13 @@ const MAX_BITS = 1023;
                     ;; TODO: возможно нужно разбить буфер на части
                     ;; и записать часть в текущий builder "to"
                     return to.store_ref(write_slice(
-                            begin_cell().end_cell().begin_parse(),
-                            f_slice,
-                            f_len,
-                            v_slice,
-                            v_len,
-                            from,
-                            begin_cell().store_slice(v_slice)
+                        begin_cell().end_cell().begin_parse(),
+                        f_slice,
+                        f_len,
+                        v_slice,
+                        v_len,
+                        from,
+                        begin_cell().store_slice(v_slice)
                     ).end_cell());
                 }
 
@@ -101,33 +98,31 @@ const MAX_BITS = 1023;
     }
 
     return write_slice(
-            buffer,
-            f_slice,
-            f_len,
-            v_slice,
-            v_len,
-            from~load_ref().begin_parse(),
-            to
+        buffer,
+        f_slice,
+        f_len,
+        v_slice,
+        v_len,
+        from~load_ref().begin_parse(),
+        to
     );
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-    throw_if(1, flag <= 0);
-    throw_if(1, value <= 0);
-    throw_if(1, bits_from_int(flag) > 128);
-    throw_if(1, bits_from_int(value) > 128);
-
     (slice f_slice, int f_len) = slice_and_len_from_int(flag);
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
 
     return write_slice(
-            begin_cell().end_cell().begin_parse(),
-            f_slice,
-            f_len,
-            v_slice,
-            v_len,
-            linked_list.begin_parse(),
-            begin_cell()
+        begin_cell().end_cell().begin_parse(),
+        f_slice,
+        f_len,
+        v_slice,
+        v_len,
+        linked_list.begin_parse(),
+        begin_cell()
     ).end_cell();
+}
+
+() recv_internal() {
 }
