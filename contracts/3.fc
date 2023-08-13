@@ -122,19 +122,11 @@ const MAX_BITS = 1023;
     return s.load_uint(1);
 }
 
-;; testable
-(cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-    throw_if(1, flag <= 0);
-    throw_if(1, value <= 0);
-    throw_if(1, bits_from_int(flag) > 128);
-    throw_if(1, bits_from_int(value) > 128);
-
+(cell) different_sizes_mode(int flag, int value, cell linked_list) {
     (slice f_slice, int f_len) = slice_and_len_from_int(flag);
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
 
-;;     (slice from, slice flag_start) = linked_list.begin_parse().load_bits(32);
     (slice from, int from_bit) = (linked_list.begin_parse(), 0);
-;;     slice to = begin_cell().store_slice(flag_start).end_cell().begin_parse();
     slice to = begin_cell().end_cell().begin_parse();
 
     int cursor = 0;
@@ -170,4 +162,90 @@ const MAX_BITS = 1023;
     }
 
     return begin_cell().store_slice(to).end_cell();
+}
+
+(slice) write_next_cell_(slice portions, slice from) {
+    if (from.slice_refs_empty?()) {
+        if (portions.slice_refs_empty?()) {
+            int from_len = from.slice_bits();
+            return begin_cell().store_uint(from~load_uint(from_len), from_len).end_cell().begin_parse();
+        }
+
+        int portion_len = portions.slice_bits();
+        portions = portions~load_ref().begin_parse();
+
+        int from_len = from.slice_bits();
+        if (from_len < portion_len) {
+            if (from_len > 0) {
+                return begin_cell()
+                        .store_uint(from~load_uint(from_len), from_len)
+                        .store_ref(begin_cell().store_slice(write_next_cell_(portions, from)).end_cell())
+                        .end_cell()
+                        .begin_parse();
+            }
+        } else {
+            int data = from~load_uint(portion_len);
+            return begin_cell()
+                    .store_uint(data, portion_len)
+                    .store_ref(begin_cell().store_slice(write_next_cell_(portions, from)).end_cell())
+                    .end_cell()
+                    .begin_parse();
+        }
+
+        ;; никогда не может быть по логике кода
+        return begin_cell().end_cell().begin_parse();
+
+    } else {
+        int portion_len = portions.slice_bits();
+        int data = 0;
+        int left_len = from.slice_bits();
+        if (left_len < portion_len) {
+            int right_len = portion_len - left_len;
+            data = from~load_uint(left_len);
+            from = from~load_ref().begin_parse();
+            data += from~load_uint(right_len);
+        } else {
+            data = from~load_uint(portion_len);
+        }
+
+        if (portions.slice_refs_empty?()) {
+            return begin_cell()
+                    .store_uint(data, portion_len)
+                    .end_cell()
+                    .begin_parse();
+        }
+
+        portions = portions~load_ref().begin_parse();
+        return begin_cell()
+                .store_uint(data, portion_len)
+                .store_ref(begin_cell().store_slice(write_next_cell_(portions, from)).end_cell())
+                .end_cell()
+                .begin_parse();
+    }
+}
+
+(cell) same_sizes_mode(int flag, int value, cell linked_list) {
+    cell reorganized_data = different_sizes_mode(flag, value, linked_list);
+    slice from = reorganized_data.begin_parse();
+
+    slice portions = linked_list.begin_parse();
+
+    return begin_cell().store_slice(write_next_cell_(portions, from)).end_cell();
+}
+
+;; testable
+(cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+    throw_if(1, flag <= 0);
+    throw_if(1, value <= 0);
+    throw_if(1, bits_from_int(flag) > 128);
+    throw_if(1, bits_from_int(value) > 128);
+
+    (slice f_slice, int f_len) = slice_and_len_from_int(flag);
+    (slice v_slice, int v_len) = slice_and_len_from_int(value);
+
+    if (f_len == v_len) {
+        return same_sizes_mode(flag, value, linked_list);
+    } else {
+        return same_sizes_mode(flag, value, linked_list);
+    }
 }

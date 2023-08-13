@@ -230,18 +230,22 @@ describe('Task3', () => {
             expect(res).toEqualCell(cellRes);
         });
 
-        // it('if cell not full doesnt touch it length', async () => {
-        //     const cell = beginCell()
-        //       .storeUint(0, 1020)
-        //       .storeRef(
-        //         beginCell()
-        //           .storeUint(0b1, 1).endCell()
-        //       )
-        //       .endCell();
-        //
-        //     const res = await task3.getChangedLinkedList(0b100001, 0b11111, cell);
-        //     expect(res).toEqualCell(cell);
-        // });
+        it('if cell not full doesnt touch it length', async () => {
+            const cell = beginCell()
+              .storeUint(0, 3)
+              .storeRef(
+                beginCell()
+                  .storeUint(0b1, 1).endCell()
+              )
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0, 3)
+              .storeUint(0b1, 1).endCell();
+
+            const res = await task3.getChangedLinkedList(0b101, 0b10, cell);
+            expect(res).toEqualCell(cellRes);
+        });
 
         it('2 cells found starts with 0 and ends with 0', async () => {
             const from = 0b10001;
@@ -262,6 +266,44 @@ describe('Task3', () => {
               .storeRef(
                 beginCell()
                   .storeUint(0b1000000, 8)
+              )
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, to, cell);
+            expect(res).toEqualCell(cellRes);
+        });
+    });
+
+    /*
+     We have the target flag 101110101 and the value
+     to be written 111111111 as inputs, and a linked list of cells, in which the bit
+     value of the first cell ends with ...10100001011, and in the ref we have cell that
+     starts with 10101000111111...
+     The output should be a linked list where the first
+     cell ends with ...10100001111, and the second cell starts with 11111000111111...
+     */
+    describe('same sizes mode', () => {
+        fit('test exactly from description', async () => {
+            const from = 0b101110101;
+            const to = 0b111111111;
+
+            const cell = beginCell()
+              .storeUint(0, 10)
+              .storeUint(0b10100001011, 11)
+              .storeRef(
+                beginCell()
+                  .storeUint(0b10101000111111, 14)
+                  .storeUint(1, 20)
+              )
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0, 10)
+              .storeUint(0b10100001111, 11)
+              .storeRef(
+                beginCell()
+                  .storeUint(0b11111000111111, 14)
+                  .storeUint(1, 20)
               )
               .endCell();
 
