@@ -55,7 +55,7 @@ const MIN_ASCII2 = 97;
 }
 
 (cell) shift_text(int shift, cell text) inline {
-;;   shift = shift % RANGE;
+  shift = shift % RANGE;
   if (shift == 0) {
     return text;
   }

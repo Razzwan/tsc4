@@ -16,6 +16,9 @@
 
 -}
 
+() recv_internal() {
+}
+
 const MAX_BITS = 1023;
 
 (int) bits_from_int(int t) {
@@ -114,15 +117,12 @@ const MAX_BITS = 1023;
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
 
     return write_slice(
-        begin_cell().end_cell().begin_parse(),
-        f_slice,
-        f_len,
-        v_slice,
-        v_len,
-        linked_list.begin_parse(),
-        begin_cell()
+            begin_cell().end_cell().begin_parse(),
+            f_slice,
+            f_len,
+            v_slice,
+            v_len,
+            linked_list.begin_parse(),
+            begin_cell()
     ).end_cell();
-}
-
-() recv_internal() {
 }
