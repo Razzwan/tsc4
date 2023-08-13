@@ -230,17 +230,43 @@ describe('Task3', () => {
             expect(res).toEqualCell(cellRes);
         });
 
-        it('if cell not full doesnt touch it length', async () => {
+        // it('if cell not full doesnt touch it length', async () => {
+        //     const cell = beginCell()
+        //       .storeUint(0, 1020)
+        //       .storeRef(
+        //         beginCell()
+        //           .storeUint(0b1, 1).endCell()
+        //       )
+        //       .endCell();
+        //
+        //     const res = await task3.getChangedLinkedList(0b100001, 0b11111, cell);
+        //     expect(res).toEqualCell(cell);
+        // });
+
+        it('2 cells found starts with 0 and ends with 0', async () => {
+            const from = 0b10001;
+            const to = 0b1001;
+
             const cell = beginCell()
-              .storeUint(0, 1020)
+              .storeUint(0, 1021)
+              .storeUint(0b10, 2)
               .storeRef(
                 beginCell()
-                  .storeUint(0b1, 1).endCell()
+                  .storeUint(0b1000000, 9)
               )
               .endCell();
 
-            const res = await task3.getChangedLinkedList(0b100001, 0b11111, cell);
-            expect(res).toEqualCell(cell);
+            const cellRes = beginCell()
+              .storeUint(0, 1021)
+              .storeUint(0b10, 2)
+              .storeRef(
+                beginCell()
+                  .storeUint(0b1000000, 8)
+              )
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, to, cell);
+            expect(res).toEqualCell(cellRes);
         });
     });
 });

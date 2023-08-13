@@ -33,10 +33,11 @@
 }
 
 (int) get_ns_bit(slice s, int skip) {
-    if (skip >= s.slice_bits()) {
-        return s~load_ref().begin_parse().get_ns_bit(skip - s.slice_bits());
+    int s_len = s.slice_bits();
+    if (skip >= s_len) {
+        return s~load_ref().begin_parse().get_ns_bit(skip - s_len);
     }
-    (_, int r) = load_uint(s.preload_bits(skip + 1).skip_bits(skip), 1);
+    (_, int r) = load_uint(s.skip_bits(skip), 1);
     return r;
 }
 
