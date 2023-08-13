@@ -45,10 +45,12 @@ const MAX_BITS = 1023;
         int from_bit = from~load_uint(1);
         int buf_len = buffer.slice_bits();
 
+        throw_if(887, buf_len >= f_len);
+
         (_, int compare_with) = f_slice.skip_bits(buf_len).load_uint(1);
 
         if (from_bit ^ compare_with) {
-            if (to.slice_bits() + buf_len + 1 <= MAX_BITS) {
+            if (to.end_cell().begin_parse().slice_bits() + buf_len + 1 <= MAX_BITS) {
                 to = to.store_slice(buffer).store_uint(from_bit, 1);
                 buffer = begin_cell().end_cell().begin_parse();
             } else {
@@ -65,8 +67,8 @@ const MAX_BITS = 1023;
                 ).end_cell());
             }
         } else {
-            if (buf_len == f_len) {
-                if (to.slice_bits() + v_len <= MAX_BITS) {
+            if (buf_len + 1 == f_len) {
+                if (to.end_cell().begin_parse().slice_bits() + v_len <= MAX_BITS) {
                     to = to.store_slice(v_slice);
                 } else {
                     ;; TODO: возможно нужно разбить буфер на части
@@ -90,18 +92,18 @@ const MAX_BITS = 1023;
     }
 
     if (from.slice_refs_empty?()) {
-        return to;
+        return to.store_slice(buffer);
     }
 
-    return to.store_ref(write_slice(
+    return write_slice(
             buffer,
             f_slice,
             f_len,
             v_slice,
             v_len,
             from~load_ref().begin_parse(),
-            begin_cell().store_slice(v_slice)
-    ).end_cell());
+            to
+    );
 }
 
 ;; testable
