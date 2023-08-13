@@ -122,10 +122,10 @@ const MAX_BITS = 1023;
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-    throw_if(1, flag <= 0);
-    throw_if(1, value <= 0);
-    throw_if(1, bits_from_int(flag) > 128);
-    throw_if(1, bits_from_int(value) > 128);
+;;     throw_if(1, flag <= 0);
+;;     throw_if(1, value <= 0);
+;;     throw_if(1, bits_from_int(flag) > 128);
+;;     throw_if(1, bits_from_int(value) > 128);
 
     (slice f_slice, int f_len) = slice_and_len_from_int(flag);
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
