@@ -19,18 +19,6 @@
 () recv_internal() {
 }
 
-(int) tlen (tuple t) asm "TLEN";
-forall X -> (tuple, X) ~tpop (tuple t) asm "TPOP";
-
-(tuple) reverse_tuple (tuple t1) {
-    tuple t2 = empty_tuple();
-    repeat (t1.tlen()) {
-        var value = t1~tpop();
-        t2~tpush(value);
-    }
-    return t2;
-}
-
 (int) bits_from_int(int t) {
     if (t == 0) {
         return 1;
@@ -119,6 +107,19 @@ const MAX_BITS = 1023;
             .begin_parse();
 }
 
+(slice, int) next_slice_bit(slice s) {
+    if (s.slice_data_empty?()) {
+        if (s.slice_refs_empty?()) {
+            return (null(), null());
+        } else {
+            (_, cell ref) = s.load_ref();
+            return next_slice_bit(ref.begin_parse());
+        }
+    }
+
+    return s.load_uint(1);
+}
+
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
     throw_if(1, flag <= 0);
@@ -127,27 +128,26 @@ const MAX_BITS = 1023;
     throw_if(1, bits_from_int(value) > 128);
 
     (slice f_slice, int f_len) = slice_and_len_from_int(flag);
-
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
 
-    slice from = linked_list.begin_parse();
+    (slice from, int from_bit) = (linked_list.begin_parse(), 0);
     slice to = begin_cell().end_cell().begin_parse();
 
     int cursor = 0;
     slice buf = begin_cell().end_cell().begin_parse();
 
-    while (from.slice_data_empty?() == 0) {
-        int fromBit = get_ns_bit(from, cursor - buf.slice_bits());
-        int targBit = get_ns_bit(f_slice, cursor);
+    do {
+        from_bit = from~next_slice_bit();
 
-        if (fromBit == targBit) {
+        if (from_bit == f_slice.get_ns_bit(cursor)) {
             cursor += 1;
 
             if (cursor == f_len) {
                 to = to.write_data_train(value);
-                from~load_uint(cursor - buf.slice_bits());
                 buf = begin_cell().end_cell().begin_parse();
                 cursor = 0;
+            } else {
+                buf = buf.write_data_train(from_bit);
             }
         } else {
             int buf_len = buf.slice_bits();
@@ -155,35 +155,13 @@ const MAX_BITS = 1023;
                 to = to.write_data_train(buf~load_uint(buf_len));
             }
 
-            to = to.write_data_train(from~load_uint(cursor - buf_len + 1));
+            to = to.write_data_train(from_bit);
             cursor = 0;
         }
-
-        if (cursor == from.slice_bits()) {
-            if (from.slice_refs_empty?()) {
-                if (buf.slice_bits() > 0) {
-                    to = to.write_data_train(buf~load_uint(buf.slice_bits()));
-                }
-                if (cursor) {
-                    to = to.write_data_train(from~load_uint(cursor));
-                }
-                cursor = 0;
-            } else {
-                if (cursor) {
-                    buf = begin_cell().store_uint(from~load_uint(cursor), cursor).end_cell().begin_parse();
-                }
-
-                from = from~load_ref().begin_parse();
-            }
-        }
-    }
+    } until (from.slice_empty?());
 
     if (buf.slice_bits() > 0) {
         to = to.write_data_train(buf~load_uint(buf.slice_bits()));
-    }
-
-    if (cursor) {
-        to = to.write_data_train(from~load_uint(cursor));
     }
 
     return begin_cell().store_slice(to).end_cell();

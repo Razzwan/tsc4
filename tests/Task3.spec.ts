@@ -6,6 +6,10 @@ import '@ton-community/test-utils';
 
 import { Task3 } from '../wrappers/Task3';
 
+function lg2(n: number): number {
+    return Math.ceil(Math.log2(n));
+}
+
 describe('Task3', () => {
     let code: Cell;
 
@@ -43,31 +47,31 @@ describe('Task3', () => {
             const cell = beginCell()
               .storeUint(15, 45)
               .endCell();
-            const data = '1010001001010';
+            const data = 0b1010001001010;
 
             const res = await task3.getWriteDataTrain(cell, data);
 
             const resCell = beginCell()
               .storeUint(15, 45)
-              .storeUint(parseInt(data, 2), data.length)
+              .storeUint(data, lg2(data))
               .endCell();
             expect(res).toEqualCell(resCell);
         });
 
-        it('parent slice not fool', async () => {
+        it('parent slice not full', async () => {
             const cell = beginCell()
-              .storeUint(15, 980)
+              .storeUint(15, 1019)
               .endCell();
-            const data = '110110101010101010001';
+            const data = 0b110110101010101010001;
 
             const res = await task3.getWriteDataTrain(cell, data);
 
             const resCell = beginCell()
-              .storeUint(15, 980)
-              .storeUint(parseInt('1101', 2), 4)
+              .storeUint(15, 1019)
+              .storeUint(0b1101, 4)
               .storeRef(
                 beginCell()
-                  .storeUint(parseInt('10101010101010001', 2), '10101010101010001'.length)
+                  .storeUint(0b10101010101010001, lg2(0b10101010101010001))
               )
               .endCell();
             expect(res).toEqualCell(resCell);
@@ -75,41 +79,41 @@ describe('Task3', () => {
 
         it('parent slice with ref', async () => {
             const cell = beginCell()
-              .storeUint(15, 984)
-              .storeRef(beginCell().storeUint(32, 1000))
+              .storeUint(15, 1023)
+              .storeRef(beginCell().storeUint(32, 1007))
               .endCell();
-            const data = '110110101010101010001';
+            const data = 0b110110101010101010001;
 
             const res = await task3.getWriteDataTrain(cell, data);
 
             const resCell = beginCell()
-              .storeUint(15, 984)
+              .storeUint(15, 1023)
               .storeRef(
                 beginCell()
-                  .storeUint(32, 1000)
-                  .storeUint(parseInt('1101101010101010', 2), '1101101010101010'.length)
+                  .storeUint(32, 1007)
+                  .storeUint(0b1101101010101010, lg2(0b1101101010101010))
                   .storeRef(
                     beginCell()
-                      .storeUint(parseInt('10001', 2), '10001'.length)
+                      .storeUint(0b10001, lg2(0b10001))
                   )
               )
               .endCell();
             expect(res).toEqualCell(resCell);
         });
 
-        it('parent slice exactly fool', async () => {
+        it('parent slice exactly full', async () => {
             const cell = beginCell()
-              .storeUint(15, 984)
+              .storeUint(15, 1023)
               .endCell();
-            const data = '110110101010101010001';
+            const data = 0b110110101010101010001;
 
             const res = await task3.getWriteDataTrain(cell, data);
 
             const resCell = beginCell()
-              .storeUint(15, 984)
+              .storeUint(15, 1023)
               .storeRef(
                 beginCell()
-                  .storeUint(parseInt(data, 2), data.length)
+                  .storeUint(data, lg2(data))
               )
               .endCell();
             expect(res).toEqualCell(resCell);
@@ -126,7 +130,6 @@ describe('Task3', () => {
               .endCell();
 
             const cellRes = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(parseInt(to, 2), to.length)
               .endCell();
 
@@ -162,7 +165,6 @@ describe('Task3', () => {
               .endCell();
 
             const cellRes = beginCell()
-              .storeUint(0xff, 32)
               .storeUint(parseInt(strRes, 2), strRes.length)
               .endCell();
 

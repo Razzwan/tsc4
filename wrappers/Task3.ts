@@ -39,15 +39,15 @@ export class Task3 implements Contract {
 		});
 	}
 
-	async getWriteDataTrain(provider: ContractProvider, cells_train: Cell, boolStringData: string): Promise<any> {
+	async getWriteDataTrain(provider: ContractProvider, cells_train: Cell, boolData: number): Promise<Cell> {
 		const result = await provider.get('write_data_train', [
 			{type: 'slice', cell: cells_train},
-			{type: 'int', value: BigInt(parseInt(boolStringData, 2))}
+			{type: 'int', value: BigInt(boolData)}
 		]);
 		return result.stack.readCell();
 	}
 
-	async getChangedLinkedList(provider: ContractProvider, boolStrFlag: string, boolValueStr: string, text: Cell): Promise<any> {
+	async getChangedLinkedList(provider: ContractProvider, boolStrFlag: string, boolValueStr: string, text: Cell): Promise<Cell> {
 		const result = await provider.get('find_and_replace', [
 			{type: 'int', value: BigInt(parseInt(boolStrFlag, 2))},
 			{type: 'int', value: BigInt(parseInt(boolValueStr, 2))},
