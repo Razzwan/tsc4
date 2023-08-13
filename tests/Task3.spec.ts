@@ -10,6 +10,26 @@ function lg2(n: number): number {
     return Math.ceil(Math.log2(n));
 }
 
+export const zeroNum = (num: number): string => {
+    return Array.from(Array(num).keys())
+      .map(() => '0')
+      .join('');
+};
+
+const striInEnd = (str: string, len: number) => {
+    return zeroNum(len - str.length) + str;
+}
+
+const parseRes = (res: Cell) => {
+    const firstLen = res.beginParse().remainingBits;
+    const secondLen = (res.beginParse().loadRef() as any).beginParse().remainingBits;
+    console.log('parseRes >>>>>>> ', {
+        firstLen,
+        secondLen,
+    });
+    return striInEnd(res.beginParse().loadUint(firstLen).toString(2), firstLen) + striInEnd((res.beginParse().loadRef() as any).beginParse().loadUint(secondLen).toString(2), secondLen)
+}
+
 describe('Task3', () => {
     let code: Cell;
 
@@ -260,54 +280,19 @@ describe('Task3', () => {
               )
               .endCell();
 
+            const secondLen = 8;
             const cellRes = beginCell()
               .storeUint(0, 1021)
               .storeUint(0b10, 2)
               .storeRef(
                 beginCell()
-                  .storeUint(0b1000000, 8)
+                  .storeUint(0b1000000, secondLen)
               )
               .endCell();
 
             const res = await task3.getChangedLinkedList(from, to, cell);
-            expect(res).toEqualCell(cellRes);
-        });
-    });
 
-    /*
-     We have the target flag 101110101 and the value
-     to be written 111111111 as inputs, and a linked list of cells, in which the bit
-     value of the first cell ends with ...10100001011, and in the ref we have cell that
-     starts with 10101000111111...
-     The output should be a linked list where the first
-     cell ends with ...10100001111, and the second cell starts with 11111000111111...
-     */
-    describe('same sizes mode', () => {
-        fit('test exactly from description', async () => {
-            const from = 0b101110101;
-            const to = 0b111111111;
-
-            const cell = beginCell()
-              .storeUint(0, 10)
-              .storeUint(0b10100001011, 11)
-              .storeRef(
-                beginCell()
-                  .storeUint(0b10101000111111, 14)
-                  .storeUint(1, 20)
-              )
-              .endCell();
-
-            const cellRes = beginCell()
-              .storeUint(0, 10)
-              .storeUint(0b10100001111, 11)
-              .storeRef(
-                beginCell()
-                  .storeUint(0b11111000111111, 14)
-                  .storeUint(1, 20)
-              )
-              .endCell();
-
-            const res = await task3.getChangedLinkedList(from, to, cell);
+            console.log('res', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
     });
