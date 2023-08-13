@@ -19,6 +19,8 @@
 () recv_internal() {
 }
 
+const MAX_BITS = 1023;
+
 (int) bits_from_int(int t) {
     if (t == 0) {
         return 1;
@@ -32,140 +34,91 @@
     return i;
 }
 
-(int) get_ns_bit(slice s, int skip) {
-    int s_len = s.slice_bits();
-    if (skip >= s_len) {
-        return s~load_ref().begin_parse().get_ns_bit(skip - s_len);
-    }
-    (_, int r) = load_uint(s.skip_bits(skip), 1);
-    return r;
-}
-
 (slice, int) slice_and_len_from_int(int v) {
     int bit_len = bits_from_int(v);
     return (begin_cell().store_uint(v, bit_len).end_cell().begin_parse(), bit_len);
 }
 
-const MAX_BITS = 1023;
+(builder) write_slice(slice buffer, slice f_slice, int f_len, slice v_slice, int v_len, slice from, builder to) {
 
-(slice) write_data_train(slice root, int data, int data_len) method_id {
-    int l = root.slice_bits();
-    if (l == MAX_BITS) {
-        if (root.slice_refs_empty?()) {
-            return begin_cell()
-                    .store_slice(root)
-                    .store_ref(
-                            begin_cell()
-                                    .store_slice(write_data_train(
-                                            begin_cell().end_cell().begin_parse(),
-                                            data,
-                                            data_len
-                                    ))
-                                    .end_cell()
-                    )
-                    .end_cell()
-                    .begin_parse();
+    while (~ from.slice_data_empty?()) {
+        int from_bit = from~load_uint(1);
+        int buf_len = buffer.slice_bits();
+
+        (_, int compare_with) = f_slice.skip_bits(buf_len).load_uint(1);
+
+        if (from_bit ^ compare_with) {
+            if (to.slice_bits() + buf_len + 1 <= MAX_BITS) {
+                to = to.store_slice(buffer).store_uint(from_bit, 1);
+                buffer = begin_cell().end_cell().begin_parse();
+            } else {
+                ;; TODO: возможно нужно разбить буфер на части
+                ;; и записать часть в текущий builder "to"
+                return to.store_ref(write_slice(
+                        begin_cell().end_cell().begin_parse(),
+                        f_slice,
+                        f_len,
+                        v_slice,
+                        v_len,
+                        from,
+                        begin_cell().store_slice(buffer).store_uint(from_bit, 1)
+                ).end_cell());
+            }
         } else {
-            return begin_cell()
-                    .store_slice(root)
-                    .store_ref(
-                            begin_cell()
-                                    .store_slice(write_data_train(root~load_ref().begin_parse(), data, data_len))
-                                    .end_cell()
-                    )
-                    .end_cell()
-                    .begin_parse();
+            if (buf_len == f_len) {
+                if (to.slice_bits() + v_len <= MAX_BITS) {
+                    to = to.store_slice(v_slice);
+                } else {
+                    ;; TODO: возможно нужно разбить буфер на части
+                    ;; и записать часть в текущий builder "to"
+                    return to.store_ref(write_slice(
+                            begin_cell().end_cell().begin_parse(),
+                            f_slice,
+                            f_len,
+                            v_slice,
+                            v_len,
+                            from,
+                            begin_cell().store_slice(v_slice)
+                    ).end_cell());
+                }
+
+                buffer = begin_cell().end_cell().begin_parse();
+            } else {
+                buffer = begin_cell().store_slice(buffer).store_uint(from_bit, 1).end_cell().begin_parse();
+            }
         }
     }
 
-    if (l + data_len <= MAX_BITS) {
-        return begin_cell()
-                .store_slice(root)
-                .store_uint(data, data_len)
-                .end_cell().begin_parse();
+    if (from.slice_refs_empty?()) {
+        return to;
     }
 
-    slice data_slice = begin_cell()
-            .store_uint(data, data_len)
-            .end_cell()
-            .begin_parse();
-
-    int first = data_slice~load_uint(MAX_BITS - l);
-    int last = data_slice~load_uint(data_len - MAX_BITS + l);
-
-    return begin_cell()
-            .store_slice(root)
-            .store_uint(first, MAX_BITS - l)
-            .store_ref(
-                    begin_cell()
-                            .store_slice(write_data_train(
-                                    begin_cell().end_cell().begin_parse(),
-                                    last,
-                                    data_len - MAX_BITS + l
-                            ))
-                            .end_cell()
-            )
-            .end_cell()
-            .begin_parse();
-}
-
-(slice, int) next_slice_bit(slice s) {
-    if (s.slice_data_empty?()) {
-        if (s.slice_refs_empty?()) {
-            return (null(), null());
-        } else {
-            (_, cell ref) = s.load_ref();
-            return next_slice_bit(ref.begin_parse());
-        }
-    }
-
-    return s.load_uint(1);
+    return to.store_ref(write_slice(
+            buffer,
+            f_slice,
+            f_len,
+            v_slice,
+            v_len,
+            from~load_ref().begin_parse(),
+            begin_cell().store_slice(v_slice)
+    ).end_cell());
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-    throw_if(1, flag <= 0);
-    throw_if(1, value <= 0);
-    throw_if(1, bits_from_int(flag) > 128);
-    throw_if(1, bits_from_int(value) > 128);
-
     (slice f_slice, int f_len) = slice_and_len_from_int(flag);
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
 
-    (slice from, int from_bit) = (linked_list.begin_parse(), 0);
-    slice to = begin_cell().end_cell().begin_parse();
+    slice from = linked_list.begin_parse();
+    builder to = begin_cell();
 
-    int cursor = 0;
-    slice buf = begin_cell().end_cell().begin_parse();
-
-    do {
-        from_bit = from~next_slice_bit();
-
-        if (from_bit == f_slice.get_ns_bit(cursor)) {
-            cursor += 1;
-
-            if (cursor ^ f_len) {
-                buf = buf.write_data_train(from_bit, 1);
-            } else {
-                to = to.write_data_train(value, v_len);
-                buf = begin_cell().end_cell().begin_parse();
-                cursor = 0;
-            }
-        } else {
-            int buf_len = buf.slice_bits();
-            if (buf_len > 0) {
-                to = to.write_data_train(buf~load_uint(buf_len), buf_len);
-            }
-
-            to = to.write_data_train(from_bit, 1);
-            cursor = 0;
-        }
-    } until (from.slice_empty?());
-
-    int buf_l = buf.slice_bits();
-    if (buf_l > 0) {
-        to = to.write_data_train(buf~load_uint(buf_l), buf_l);
-    }
-
-    return begin_cell().store_slice(to).end_cell();
+    return write_slice(
+            begin_cell().end_cell().begin_parse(),
+            f_slice,
+            f_len,
+            v_slice,
+            v_len,
+            from,
+            to
+    ).end_cell();
 }
