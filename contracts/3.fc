@@ -53,8 +53,6 @@ const MAX_BITS = 1023;
                 to = to.store_slice(buffer).store_uint(from_bit, 1);
                 buffer = begin_cell().end_cell().begin_parse();
             } else {
-                ;; TODO: возможно нужно разбить буфер на части
-                ;; и записать часть в текущий builder "to"
                 return to.store_ref(write_slice(
                     begin_cell().end_cell().begin_parse(),
                     f_slice,
@@ -70,8 +68,6 @@ const MAX_BITS = 1023;
                 if (to.end_cell().begin_parse().slice_bits() + v_len <= MAX_BITS) {
                     to = to.store_slice(v_slice);
                 } else {
-                    ;; TODO: возможно нужно разбить буфер на части
-                    ;; и записать часть в текущий builder "to"
                     return to.store_ref(write_slice(
                         begin_cell().end_cell().begin_parse(),
                         f_slice,
@@ -94,8 +90,6 @@ const MAX_BITS = 1023;
         if (to.end_cell().begin_parse().slice_bits() + buffer.slice_bits() <= MAX_BITS) {
             return to.store_slice(buffer);
         } else {
-            ;; TODO: возможно нужно разбить буфер на части
-            ;; и записать часть в текущий builder "to"
             return to.store_ref(begin_cell().store_slice(buffer).end_cell());
         }
     }
