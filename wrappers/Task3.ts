@@ -48,10 +48,10 @@ export class Task3 implements Contract {
 		return result.stack.readCell();
 	}
 
-	async getChangedLinkedList(provider: ContractProvider, boolStrFlag: string, boolValueStr: string, text: Cell): Promise<Cell> {
+	async getChangedLinkedList(provider: ContractProvider, boolStrFlag: number | bigint, boolValueStr: number | bigint, text: Cell): Promise<Cell> {
 		const result = await provider.get('find_and_replace', [
-			{type: 'int', value: BigInt(parseInt(boolStrFlag, 2))},
-			{type: 'int', value: BigInt(parseInt(boolValueStr, 2))},
+			{type: 'int', value: BigInt(boolStrFlag)},
+			{type: 'int', value: BigInt(boolValueStr)},
 			{type: 'cell', cell: text},
 		]);
 		return result.stack.readCell();

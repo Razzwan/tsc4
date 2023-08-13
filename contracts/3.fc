@@ -131,9 +131,10 @@ const MAX_BITS = 1023;
     (slice f_slice, int f_len) = slice_and_len_from_int(flag);
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
 
-    (slice from, slice flag_start) = linked_list.begin_parse().load_bits(32);
-    int from_bit = 0;
-    slice to = begin_cell().store_slice(flag_start).end_cell().begin_parse();
+;;     (slice from, slice flag_start) = linked_list.begin_parse().load_bits(32);
+    (slice from, int from_bit) = (linked_list.begin_parse(), 0);
+;;     slice to = begin_cell().store_slice(flag_start).end_cell().begin_parse();
+    slice to = begin_cell().end_cell().begin_parse();
 
     int cursor = 0;
     slice buf = begin_cell().end_cell().begin_parse();
@@ -162,8 +163,9 @@ const MAX_BITS = 1023;
         }
     } until (from.slice_empty?());
 
-    if (buf.slice_bits() > 0) {
-        to = to.write_data_train(buf~load_uint(buf.slice_bits()), buf.slice_bits());
+    int buf_l = buf.slice_bits();
+    if (buf_l > 0) {
+        to = to.write_data_train(buf~load_uint(buf_l), buf_l);
     }
 
     return begin_cell().store_slice(to).end_cell();
