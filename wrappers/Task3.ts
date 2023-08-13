@@ -39,10 +39,11 @@ export class Task3 implements Contract {
 		});
 	}
 
-	async getWriteDataTrain(provider: ContractProvider, cells_train: Cell, boolData: number): Promise<Cell> {
+	async getWriteDataTrain(provider: ContractProvider, cells_train: Cell, boolData: number, dataLen: number): Promise<Cell> {
 		const result = await provider.get('write_data_train', [
 			{type: 'slice', cell: cells_train},
-			{type: 'int', value: BigInt(boolData)}
+			{type: 'int', value: BigInt(boolData)},
+			{type: 'int', value: BigInt(dataLen)},
 		]);
 		return result.stack.readCell();
 	}

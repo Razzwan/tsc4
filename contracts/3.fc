@@ -47,9 +47,8 @@
 
 const MAX_BITS = 1023;
 
-(slice) write_data_train(slice root, int data) method_id {
+(slice) write_data_train(slice root, int data, int data_len) method_id {
     int l = root.slice_bits();
-    int data_len = bits_from_int(data);
     if (l == MAX_BITS) {
         if (root.slice_refs_empty?()) {
             return begin_cell()
@@ -58,7 +57,8 @@ const MAX_BITS = 1023;
                             begin_cell()
                                     .store_slice(write_data_train(
                                             begin_cell().end_cell().begin_parse(),
-                                            data
+                                            data,
+                                            data_len
                                     ))
                                     .end_cell()
                     )
@@ -69,7 +69,7 @@ const MAX_BITS = 1023;
                     .store_slice(root)
                     .store_ref(
                             begin_cell()
-                                    .store_slice(write_data_train(root~load_ref().begin_parse(), data))
+                                    .store_slice(write_data_train(root~load_ref().begin_parse(), data, data_len))
                                     .end_cell()
                     )
                     .end_cell()
@@ -99,7 +99,8 @@ const MAX_BITS = 1023;
                     begin_cell()
                             .store_slice(write_data_train(
                                     begin_cell().end_cell().begin_parse(),
-                                    last
+                                    last,
+                                    data_len - MAX_BITS + l
                             ))
                             .end_cell()
             )
@@ -143,25 +144,25 @@ const MAX_BITS = 1023;
             cursor += 1;
 
             if (cursor == f_len) {
-                to = to.write_data_train(value);
+                to = to.write_data_train(value, v_len);
                 buf = begin_cell().end_cell().begin_parse();
                 cursor = 0;
             } else {
-                buf = buf.write_data_train(from_bit);
+                buf = buf.write_data_train(from_bit, 1);
             }
         } else {
             int buf_len = buf.slice_bits();
             if (buf_len > 0) {
-                to = to.write_data_train(buf~load_uint(buf_len));
+                to = to.write_data_train(buf~load_uint(buf_len), buf_len);
             }
 
-            to = to.write_data_train(from_bit);
+            to = to.write_data_train(from_bit, 1);
             cursor = 0;
         }
     } until (from.slice_empty?());
 
     if (buf.slice_bits() > 0) {
-        to = to.write_data_train(buf~load_uint(buf.slice_bits()));
+        to = to.write_data_train(buf~load_uint(buf.slice_bits()), buf.slice_bits());
     }
 
     return begin_cell().store_slice(to).end_cell();

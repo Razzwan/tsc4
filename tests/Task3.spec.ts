@@ -49,7 +49,7 @@ describe('Task3', () => {
               .endCell();
             const data = 0b1010001001010;
 
-            const res = await task3.getWriteDataTrain(cell, data);
+            const res = await task3.getWriteDataTrain(cell, data, lg2(data));
 
             const resCell = beginCell()
               .storeUint(15, 45)
@@ -64,7 +64,7 @@ describe('Task3', () => {
               .endCell();
             const data = 0b110110101010101010001;
 
-            const res = await task3.getWriteDataTrain(cell, data);
+            const res = await task3.getWriteDataTrain(cell, data, lg2(data));
 
             const resCell = beginCell()
               .storeUint(15, 1019)
@@ -84,7 +84,7 @@ describe('Task3', () => {
               .endCell();
             const data = 0b110110101010101010001;
 
-            const res = await task3.getWriteDataTrain(cell, data);
+            const res = await task3.getWriteDataTrain(cell, data, lg2(data));
 
             const resCell = beginCell()
               .storeUint(15, 1023)
@@ -107,7 +107,7 @@ describe('Task3', () => {
               .endCell();
             const data = 0b110110101010101010001;
 
-            const res = await task3.getWriteDataTrain(cell, data);
+            const res = await task3.getWriteDataTrain(cell, data, lg2(data));
 
             const resCell = beginCell()
               .storeUint(15, 1023)
@@ -115,6 +115,24 @@ describe('Task3', () => {
                 beginCell()
                   .storeUint(data, lg2(data))
               )
+              .endCell();
+            expect(res).toEqualCell(resCell);
+        });
+
+        it('third van', async () => {
+            const cell = beginCell()
+              .storeUint(15, 1023)
+              .storeRef(beginCell().storeUint(19, 1022))
+              .endCell();
+            const data = 0b101;
+
+            const res = await task3.getWriteDataTrain(cell, data, lg2(data));
+
+            const resCell = beginCell()
+              .storeUint(15, 1023)
+              .storeRef(beginCell().storeUint(19, 1022).storeUint(0b1, 1).storeRef(
+                beginCell().storeUint(0b1, 2)
+              ))
               .endCell();
             expect(res).toEqualCell(resCell);
         });
