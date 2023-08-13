@@ -43,9 +43,8 @@ const MAX_BITS = 1023;
 
     while (~ from.slice_data_empty?()) {
         int from_bit = from~load_uint(1);
-        int buf_len = buffer.slice_bits();
 
-        throw_if(887, buf_len >= f_len);
+        int buf_len = buffer.slice_bits();
 
         (_, int compare_with) = f_slice.skip_bits(buf_len).load_uint(1);
 
@@ -92,7 +91,13 @@ const MAX_BITS = 1023;
     }
 
     if (from.slice_refs_empty?()) {
-        return to.store_slice(buffer);
+        if (to.end_cell().begin_parse().slice_bits() + buffer.slice_bits() <= MAX_BITS) {
+            return to.store_slice(buffer);
+        } else {
+            ;; TODO: возможно нужно разбить буфер на части
+            ;; и записать часть в текущий builder "to"
+            return to.store_ref(begin_cell().store_slice(buffer).end_cell());
+        }
     }
 
     return write_slice(
@@ -108,11 +113,13 @@ const MAX_BITS = 1023;
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+    throw_if(1, flag <= 0);
+    throw_if(1, value <= 0);
+    throw_if(1, bits_from_int(flag) > 128);
+    throw_if(1, bits_from_int(value) > 128);
+
     (slice f_slice, int f_len) = slice_and_len_from_int(flag);
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
-
-    slice from = linked_list.begin_parse();
-    builder to = begin_cell();
 
     return write_slice(
             begin_cell().end_cell().begin_parse(),
@@ -120,7 +127,7 @@ const MAX_BITS = 1023;
             f_len,
             v_slice,
             v_len,
-            from,
-            to
+            linked_list.begin_parse(),
+            begin_cell()
     ).end_cell();
 }
