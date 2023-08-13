@@ -204,7 +204,7 @@ describe('Task3', () => {
 
             const res = await task3.getChangedLinkedList(from, to, cell);
 
-            console.log('res', parseRes(res));
+            // console.log('res', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
 
@@ -242,7 +242,61 @@ describe('Task3', () => {
 
             const res = await task3.getChangedLinkedList(from, to, cell);
 
-            console.log('res', parseRes(res));
+            // console.log('res', parseRes(res));
+            expect(res).toEqualCell(cellRes);
+        });
+
+        it('2 cells with long replacement', async () => {
+            const from = 0b10001;
+            const to = 0b111111;
+
+            const cell = beginCell()
+              .storeUint(0, 1021)
+              .storeUint(0b10, 2)
+              .storeRef(
+                beginCell()
+                  .storeUint(0b1000000, 9)
+              )
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0, 1021)
+              .storeRef(
+                beginCell()
+                  .storeUint(0b111111000000, lg2(0b111111000000))
+              )
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, to, cell);
+
+            // console.log('res', parseRes(res));
+            expect(res).toEqualCell(cellRes);
+        });
+
+        it('2 matches', async () => {
+            const from = 0b10001;
+            const to = 0b111111;
+
+            const cell = beginCell()
+              .storeUint(0, 1021)
+              .storeUint(0b10, 2)
+              .storeRef(
+                beginCell()
+                  .storeUint(0b1100010, 9)
+              )
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0, 1021)
+              .storeRef(
+                beginCell()
+                  .storeUint(0b1111111111110, lg2(0b1111111111110))
+              )
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, to, cell);
+
+            // console.log('res', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
     });
