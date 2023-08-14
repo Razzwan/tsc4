@@ -83,6 +83,7 @@ describe('Task3', () => {
 
             const res = await task3.getChangedLinkedList(from, to, cell);
             // expect(res.beginParse().loadStringTail()).toBe(1);
+            // console.log('>>>>> ', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
 
@@ -118,6 +119,27 @@ describe('Task3', () => {
 
             const res = await task3.getChangedLinkedList(from, to, cell);
             // expect(res.beginParse().skip(32).loadUint(strRes.length-4).toString(2)).toEqual(1);
+            // console.log('>>>>> ', parseRes(res));
+            expect(res).toEqualCell(cellRes);
+        });
+
+        it('simplest example - few entries with no matches at the end', async () => {
+            const from = 0b10101010; // 8
+            const to =   0b111; // 3
+            const strFrom = '10101010' + '1111' + '10101010' + '1111' + '10101010111';
+            const strRes =  '111' + '1111' + '111' + '1111' + '111111';
+
+            const cell = beginCell()
+              .storeUint(parseInt(strFrom, 2), strFrom.length)
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(parseInt(strRes, 2), strRes.length)
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, to, cell);
+            // expect(res.beginParse().skip(32).loadUint(strRes.length-4).toString(2)).toEqual(1);
+            // console.log('>>>>> ', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
 
@@ -176,7 +198,7 @@ describe('Task3', () => {
 
             const res = await task3.getChangedLinkedList(0b101, 0b10, cell);
 
-            console.log('RES >>>>>> ', parseRes(res));
+            // console.log('RES >>>>>> ', parseRes(res));
 
             expect(res).toEqualCell(cellRes);
         });
@@ -317,7 +339,7 @@ describe('Task3', () => {
             expect(res).toEqualCell(cellRes);
         });
 
-        fit('middle empty cell', async () => {
+        it('middle empty cell', async () => {
             const from = 0b1;
             const value = 0b111;
 

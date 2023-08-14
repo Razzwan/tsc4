@@ -21,7 +21,7 @@
 
 const MAX_BITS = 1023;
 
-(int) bits_from_int(int t) impure {
+(int) bits_from_int(int t) inline {
     if (t == 0) {
         return 1;
     }
@@ -34,33 +34,38 @@ const MAX_BITS = 1023;
     return i;
 }
 
-(slice, int) slice_and_len_from_int(int v) impure {
+(slice, int) slice_and_len_from_int(int v) inline {
     int bit_len = bits_from_int(v);
     return (begin_cell().store_uint(v, bit_len).end_cell().begin_parse(), bit_len);
 }
 
-(builder) write_slice(slice buffer, slice f_slice, int f_len, slice v_slice, int v_len, slice from, builder to) impure {
+(builder) write_slice(int buf_int, int buf_len, slice f_slice, int f_len, slice v_slice, int v_len, slice from, builder to) {
 
     while (~ from.slice_data_empty?()) {
         int from_bit = from~load_uint(1);
-
-        int buf_len = buffer.slice_bits();
 
         (_, int compare_with) = f_slice.skip_bits(buf_len).load_uint(1);
 
         if (from_bit ^ compare_with) {
             if (to.end_cell().begin_parse().slice_bits() + buf_len + 1 <= MAX_BITS) {
-                to = to.store_slice(buffer).store_uint(from_bit, 1);
-                buffer = begin_cell().end_cell().begin_parse();
+                if (buf_len) {
+                    to~store_uint(buf_int, buf_len);
+                    to~store_uint(from_bit, 1);
+                    buf_len = 0;
+                    buf_int = 0;
+                } else {
+                    to~store_uint(from_bit, 1);
+                }
             } else {
                 return to.store_ref(write_slice(
-                    begin_cell().end_cell().begin_parse(),
+                        0,
+                        0,
                     f_slice,
                     f_len,
                     v_slice,
                     v_len,
                     from,
-                    begin_cell().store_slice(buffer).store_uint(from_bit, 1)
+                    begin_cell().store_uint(buf_int, buf_len).store_uint(from_bit, 1)
                 ).end_cell());
             }
         } else {
@@ -69,7 +74,8 @@ const MAX_BITS = 1023;
                     to = to.store_slice(v_slice);
                 } else {
                     return to.store_ref(write_slice(
-                        begin_cell().end_cell().begin_parse(),
+                        0,
+                            0,
                         f_slice,
                         f_len,
                         v_slice,
@@ -79,23 +85,26 @@ const MAX_BITS = 1023;
                     ).end_cell());
                 }
 
-                buffer = begin_cell().end_cell().begin_parse();
+                buf_len = 0;
+                buf_int = 0;
             } else {
-                buffer = begin_cell().store_slice(buffer).store_uint(from_bit, 1).end_cell().begin_parse();
+                buf_len += 1;
+                buf_int = (buf_int << 1) + from_bit;
             }
         }
     }
 
     if (from.slice_refs_empty?()) {
-        if (to.end_cell().begin_parse().slice_bits() + buffer.slice_bits() <= MAX_BITS) {
-            return to.store_slice(buffer);
+        if (to.end_cell().begin_parse().slice_bits() + buf_len <= MAX_BITS) {
+            return to.store_uint(buf_int, buf_len);
         } else {
-            return to.store_ref(begin_cell().store_slice(buffer).end_cell());
+            return to.store_ref(begin_cell().store_uint(buf_int, buf_len).end_cell());
         }
     }
 
     return write_slice(
-        buffer,
+    buf_int,
+    buf_len,
         f_slice,
         f_len,
         v_slice,
@@ -111,7 +120,8 @@ const MAX_BITS = 1023;
     (slice v_slice, int v_len) = slice_and_len_from_int(value);
 
     return write_slice(
-            begin_cell().end_cell().begin_parse(),
+            0,
+            0,
             f_slice,
             f_len,
             v_slice,
