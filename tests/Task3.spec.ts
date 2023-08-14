@@ -299,5 +299,40 @@ describe('Task3', () => {
             // console.log('res', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
+
+        it('flag is 1', async () => {
+            const from = 0b1;
+            const value = 0b111;
+
+            const cell = beginCell()
+              .storeUint(0b1, 1)
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0b111, 3)
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, value, cell);
+
+            expect(res).toEqualCell(cellRes);
+        });
+
+        fit('middle empty cell', async () => {
+            const from = 0b1;
+            const value = 0b111;
+
+            const cell = beginCell()
+              .storeUint(0b1, 1)
+              .storeRef(beginCell().storeRef(beginCell().storeUint(0b1, 1)))
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0b111111, 6)
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, value, cell);
+
+            expect(res).toEqualCell(cellRes);
+        });
     });
 });
