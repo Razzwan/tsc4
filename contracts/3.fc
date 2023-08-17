@@ -21,6 +21,7 @@
 
 const MAX_BITS = 1023;
 const NUMBER_BITS = 128;
+const BITS_MULTIPLIER = 2;
 
 (int) bits_from_uint(int t) inline {
     if (t == 0) {
@@ -47,12 +48,13 @@ const NUMBER_BITS = 128;
     while (~ from.slice_refs_empty?()) | (~ from.slice_data_empty?()) | (buf.slice_bits() >= f_l) {
 
         if (buf.slice_bits() < f_l) {
-            if (from.slice_bits() >= NUMBER_BITS) {
-                buf = begin_cell()
-                        .store_slice(buf)
-                        .store_uint(from~load_uint(NUMBER_BITS), NUMBER_BITS)
-                        .end_cell()
-                        .begin_parse();
+            if (from.slice_bits() >= NUMBER_BITS * BITS_MULTIPLIER) {
+                builder for_buf = begin_cell()
+                        .store_slice(buf);
+                repeat (BITS_MULTIPLIER) {
+                    for_buf~store_uint(from~load_uint(NUMBER_BITS), NUMBER_BITS);
+                }
+                buf = for_buf.end_cell().begin_parse();
             } else {
                 int buf_l = buf.slice_bits();
                 int buf_v = buf~load_uint(buf_l);
