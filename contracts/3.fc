@@ -20,109 +20,107 @@
 }
 
 const MAX_BITS = 1023;
+const NUMBER_BITS = 128;
 
-(int) bits_from_int(int t) inline {
+(int) bits_from_uint(int t) inline {
     if (t == 0) {
         return 1;
     }
     int i = 0;
     int r = t;
     while (r > 0) {
-        r >>= 1;
+        r = r >> 1;
         i += 1;
     }
     return i;
 }
 
-(int, int) write_mask(int b, int mask) inline {
-    int out = 0;
+(builder) find_and_replace_slice(slice buf, slice from, builder to, int f, int f_l, int v, int v_l) {
+    from = begin_cell()
+            .store_ref(
+                    begin_cell().store_slice(from).end_cell())
+            .end_cell()
+            .begin_parse();
 
-    if (b & mask) {
-        out = 1;
-        b &= ~ mask;
-    }
+    int bits_left = MAX_BITS - to.builder_bits();
 
-    mask >>= 1;
+    while (~ from.slice_refs_empty?()) | (~ from.slice_data_empty?()) | (buf.slice_bits() >= f_l) {
 
-    int l = 1;
-    while (mask & ~(b & mask)) {
-        out <<= 1;
-        mask >>= 1;
-        l += 1;
-    }
-    return (out, l);
-}
+        if (buf.slice_bits() < f_l) {
+            if (from.slice_bits() >= NUMBER_BITS) {
+                buf = begin_cell()
+                        .store_slice(buf)
+                        .store_uint(from~load_uint(NUMBER_BITS), NUMBER_BITS)
+                        .end_cell()
+                        .begin_parse();
+            } else {
+                int buf_l = buf.slice_bits();
+                int buf_v = buf~load_uint(buf_l);
 
-(cell) find_and_replace_slice(int flag, int f_l, int value, int v_l, int buf, int b_l, slice from, builder to) {
-    int to_bits = MAX_BITS - to.builder_bits();
-    int buf_mask = 1 << (f_l - 1);
+                int from_l = from.slice_bits();
 
-    while (true) {
-        int need_bits = f_l - b_l;
-        while (need_bits) {
-            while (from.slice_data_empty?()) {
-                if (from.slice_refs_empty?()) {
-                    if (to_bits >= b_l) {
-                        to~store_uint(buf, b_l);
-                        return to.end_cell();
-                    } else {
-                        to = store_ref(to, begin_cell().store_uint(buf, b_l).end_cell());
-                        return to.end_cell();
-                    }
+                buf = begin_cell()
+                        .store_uint(buf_v, buf_l)
+                        .store_uint(from~load_uint(from_l), from_l)
+                        .end_cell()
+                        .begin_parse();
+
+                if (~ from.slice_refs_empty?()) {
+                    from = from~load_ref().begin_parse();
                 }
-                from = from~load_ref().begin_parse();
+            }
+        } else {
+            int to_load = 0;
+            int to_load_l = 0;
+            if (f ^ buf.preload_uint(f_l)) {
+                to_load = buf~load_uint(1);
+                to_load_l = 1;
+            } else {
+                buf~skip_bits(f_l);
+                to_load = v;
+                to_load_l = v_l;
             }
 
-            int n = min(from.slice_bits(), need_bits);
-            buf <<= n;
-            buf |= from~load_uint(n);
-            need_bits -= n;
-            b_l += n;
-        }
-
-        int to_buf = 0;
-        int to_buf_len = 0;
-        if (flag == buf) {
-            to_buf = value;
-            to_buf_len = v_l;
-            b_l = 0;
-            buf = 0;
-        } else {
-            (to_buf, to_buf_len) = write_mask(buf, buf_mask);
-            buf &= ~ buf_mask;
-            b_l -= to_buf_len;
-        }
-
-        if (to_bits >= to_buf_len) {
-            to~store_uint(to_buf, to_buf_len);
-            to_bits -= to_buf_len;
-        } else {
-            builder to_next = begin_cell();
-            if (to_buf_len) {
-                to_next~store_uint(to_buf, to_buf_len);
+            if (bits_left > to_load_l) {
+                bits_left -= to_load_l;
+                to~store_uint(to_load, to_load_l);
+            } else {
+                return to.store_ref(find_and_replace_slice(
+                        buf,
+                        from,
+                        begin_cell()
+                            .store_uint(to_load, to_load_l),
+                        f, f_l, v, v_l
+                ).end_cell());
             }
-            cell complete_next = find_and_replace_slice(flag, f_l, value, v_l, buf, b_l, from, to_next);
-            to = store_ref(to, complete_next);
-            return to.end_cell();
         }
     }
 
-    return begin_cell().end_cell();
+    int to_load_l = buf.slice_bits();
+    int to_load = buf~load_uint(to_load_l);
+
+    if (bits_left > to_load_l) {
+        return to.store_uint(to_load, to_load_l);
+    } else {
+        return to.store_ref(
+                begin_cell()
+                        .store_uint(to_load, to_load_l).end_cell()
+        );
+    }
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-    int f_l = bits_from_int(flag);
-    int v_l = bits_from_int(value);
+    int f_l = bits_from_uint(flag);
+    int v_l = bits_from_uint(value);
 
     return find_and_replace_slice(
-            flag,
-            f_l,
-            value,
-            v_l,
-            0,
-            0,
-            linked_list.begin_parse(),
-            begin_cell()
-    );
+            begin_cell().end_cell().begin_parse(),
+        linked_list.begin_parse(),
+        begin_cell(),
+        flag,
+        f_l,
+        value,
+        v_l
+    ).end_cell();
 }

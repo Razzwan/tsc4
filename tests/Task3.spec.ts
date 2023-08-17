@@ -83,8 +83,9 @@ describe('Task3', () => {
 
             const res = await task3.getChangedLinkedList(from, to, cell);
             // expect(res.beginParse().loadStringTail()).toBe(1);
-            // console.log('>>>>> ', parseRes(res));
-            expect(parseRes(res)).toEqual(parseRes(cellRes));
+            console.log('>>>>> ', parseRes(res));
+            // expect(parseRes(res)).toEqual(parseRes(cellRes));
+            expect(res).toEqualCell(cellRes);
         });
 
         it('simplest example - different sizes', async () => {
