@@ -21,7 +21,7 @@
 
 const MAX_BITS = 1023;
 const NUMBER_BITS = 128;
-const BITS_MULTIPLIER = 2;
+const BITS_MULTIPLIER = 6;
 
 (int) bits_from_uint(int t) inline {
     if (t == 0) {
