@@ -79,11 +79,11 @@ const MAX_BITS = 1023;
     int v_l = bits_from_int(value);
 
     if (flag <= 0) {
-        return begin_cell().end_cell();
+        return linked_list;
     }
 
     if (value <= 0) {
-        return begin_cell().end_cell();
+        return linked_list;
     }
 
     slice h = linked_list.begin_parse();
