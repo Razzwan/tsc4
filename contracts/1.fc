@@ -17,8 +17,9 @@
 
   slice tree_s = tree.begin_parse();
 
-  while (tree_s.slice_refs_empty?() == 0) {
-    cell res = find_branch_by_hash(hash, tree_s~load_ref());
+  while (~ tree_s.slice_refs_empty?()) {
+    cell s = tree_s~load_ref();
+    cell res = find_branch_by_hash(hash, s);
 
     ifnot (res.begin_parse().slice_empty?()) {
       return res;
