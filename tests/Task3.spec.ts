@@ -152,6 +152,9 @@ describe('Task3', () => {
               .endCell();
 
             const res = await task3.getChangedLinkedList(from, to, cell);
+
+            // console.log('>>>>>', parseRes(res));
+
             expect(res).toEqualCell(cell);
         });
 
@@ -358,7 +361,7 @@ describe('Task3', () => {
               .endCell();
 
             const res = await task3.getChangedLinkedList(from, value, cell);
-            console.log('>>>>> ', parseRes(res));
+            // console.log('>>>>> ', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
 
@@ -375,24 +378,28 @@ describe('Task3', () => {
               .endCell();
 
             const res = await task3.getChangedLinkedList(from, value, cell);
-            console.log('>>>>> ', parseRes(res));
+            // console.log('>>>>> ', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
 
-        it('9000 characters', async () => {
+        it('first short second long', async () => {
             const from = 0b1;
             const value = 0b111;
 
             const cell = beginCell()
-              .storeRef(beginCell().storeRef(beginCell().storeUint(0b1, 1)))
+              .storeUint(0, 3)
+              .storeRef(beginCell().storeUint(1, 1).storeUint(0, 1022))
               .endCell();
 
             const cellRes = beginCell()
+              .storeUint(0, 3)
               .storeUint(0b111, 3)
+              .storeUint(0, 1017)
+              .storeRef(beginCell().storeUint(0, 5))
               .endCell();
 
             const res = await task3.getChangedLinkedList(from, value, cell);
-            console.log('>>>>> ', parseRes(res));
+            // console.log('>>>>> ', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
     });

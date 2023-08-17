@@ -87,18 +87,20 @@ const MAX_BITS = 1023;
     int p_l = 0;
     int p_cursor = 0;
 
-    while (cursor + n_l > h.slice_bits()) & (~ h.slice_refs_empty?()) {
+    while (cursor + n_l - p_l > h.slice_bits()) & (~ h.slice_refs_empty?()) {
         slice new_h = h~load_ref().begin_parse();
-        if (cursor + n_l > h.slice_bits() + new_h.slice_bits()) {
+        if (cursor + n_l - p_l > h.slice_bits() + new_h.slice_bits()) {
             int h_len_slice = h.slice_bits();
-            h = begin_cell()
-                    .store_uint(h~load_uint(h_len_slice), h_len_slice)
-                    .store_slice(new_h)
-                    .end_cell()
-                    .begin_parse();
-        } else {
-            h = new_h;
+            if (p_l) {
+                p_l += h_len_slice;
+                p = (p << h_len_slice) + h~load_uint(h_len_slice);
+            } else {
+                p = h~load_uint(h_len_slice);
+                p_l = h_len_slice;
+            }
         }
+
+        h = new_h;
     }
 
     while (cursor + n_l - p_l + p_cursor <= h.slice_bits()) {
@@ -165,27 +167,19 @@ const MAX_BITS = 1023;
                 cursor = 0;
                 slice new_h = h~load_ref().begin_parse();
                 if (cursor + n_l - p_l + p_cursor > h.slice_bits() + new_h.slice_bits()) {
+                    int h_len_slice = h.slice_bits();
                     if (p_l) {
-                        h = begin_cell()
-                                .store_uint(p, p_l)
-                                .store_slice(new_h)
-                                .end_cell()
-                                .begin_parse();
-
-                        p = 0;
-                        p_l = 0;
-                        p_cursor = 0;
+                        p_l += h_len_slice;
+                        p = (p << h_len_slice) + h~load_uint(h_len_slice);
                     } else {
-                        int h_len_slice = h.slice_bits();
-                        h = begin_cell()
-                                .store_uint(h~load_uint(h_len_slice), h_len_slice)
-                                .store_slice(new_h)
-                                .end_cell()
-                                .begin_parse();
+                        if (h_len_slice) {
+                            p_l = h_len_slice;
+                            p = h~load_uint(h_len_slice);
+                        }
                     }
-                } else {
-                    h = new_h;
                 }
+
+                h = new_h;
             }
         }
     }
