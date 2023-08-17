@@ -145,7 +145,8 @@ const MAX_BITS = 1023;
 
             p_l = h.slice_bits();
             p = h~load_uint(p_l);
-            if (~ h.slice_refs_empty?()) {
+
+            while (cursor + n_l - p_l > h.slice_bits()) & (~ h.slice_refs_empty?()) {
                 cursor = 0;
                 h = h~load_ref().begin_parse();
             }

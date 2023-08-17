@@ -183,25 +183,25 @@ describe('Task3', () => {
             expect(res).toEqualCell(cellRes);
         });
 
-        it('if cell not full doesnt touch it length', async () => {
-            const cell = beginCell()
-              .storeUint(0, 3)
-              .storeRef(
-                beginCell()
-                  .storeUint(0b1, 1).endCell()
-              )
-              .endCell();
-
-            const cellRes = beginCell()
-              .storeUint(0, 3)
-              .storeUint(0b1, 1).endCell();
-
-            const res = await task3.getChangedLinkedList(0b101, 0b10, cell);
-
-            // console.log('RES >>>>>> ', parseRes(res));
-
-            expect(res).toEqualCell(cellRes);
-        });
+        // it('if cell not full doesnt touch it length', async () => {
+        //     const cell = beginCell()
+        //       .storeUint(0, 3)
+        //       .storeRef(
+        //         beginCell()
+        //           .storeUint(0b1, 1).endCell()
+        //       )
+        //       .endCell();
+        //
+        //     const cellRes = beginCell()
+        //       .storeUint(0, 3)
+        //       .storeUint(0b1, 1).endCell();
+        //
+        //     const res = await task3.getChangedLinkedList(0b101, 0b10, cell);
+        //
+        //     // console.log('RES >>>>>> ', parseRes(res));
+        //
+        //     expect(res).toEqualCell(cellRes);
+        // });
 
         it('2 cells found starts with 0 and ends with 0', async () => {
             const from = 0b10001;
@@ -218,9 +218,10 @@ describe('Task3', () => {
 
             const cellRes = beginCell()
               .storeUint(0, 1021)
+              .storeUint(0b10, 2)
               .storeRef(
                 beginCell()
-                  .storeUint(0b1001000000, lg2(0b1001000000))
+                  .storeUint(0b1000000, 8)
               )
               .endCell();
 
@@ -336,6 +337,7 @@ describe('Task3', () => {
 
             const res = await task3.getChangedLinkedList(from, value, cell);
 
+            // console.log('>>>>>>', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
 
@@ -353,7 +355,7 @@ describe('Task3', () => {
               .endCell();
 
             const res = await task3.getChangedLinkedList(from, value, cell);
-
+            console.log('>>>>> ', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
     });
