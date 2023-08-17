@@ -1,4 +1,4 @@
-Всего: 27.826
+Всего: 27.843
 
 Problem #1:
 Compiled: true
