@@ -15,8 +15,8 @@ Points: 5.977772379423279
 Problem #3:
 Compiled: true
 Passed Tests: true
-GasValue: 58830530
-Points: 5.374483944855357
+GasValue: 56200768
+Points: 5.391292036571418
 
 Problem #4:
 Compiled: true
