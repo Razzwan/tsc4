@@ -87,9 +87,9 @@ const MAX_BITS = 1023;
     int p_l = 0;
     int p_cursor = 0;
 
-    while (cursor + n_l - p_l > h.slice_bits()) & (~ h.slice_refs_empty?()) {
+    while (n_l - p_l > h.slice_bits()) & (~ h.slice_refs_empty?()) {
         slice new_h = h~load_ref().begin_parse();
-        if (cursor + n_l - p_l > h.slice_bits() + new_h.slice_bits()) {
+        if (n_l - p_l > h.slice_bits() + new_h.slice_bits()) {
             int h_len_slice = h.slice_bits();
             if (p_l) {
                 p_l += h_len_slice;
@@ -186,11 +186,6 @@ const MAX_BITS = 1023;
 
     if (p_l) {
         r = r.add_uint_to_train(p, p_l);
-    }
-
-    int hl__ = h.slice_bits();
-    if (hl__) {
-        r = r.add_uint_to_train(h~load_uint(hl__), hl__);
     }
 
     return r;
