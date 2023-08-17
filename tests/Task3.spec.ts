@@ -124,10 +124,10 @@ describe('Task3', () => {
         });
 
         it('simplest example - few entries with no matches at the end', async () => {
-            const from = 0b10101010; // 8
-            const to =   0b111; // 3
-            const strFrom = '10101010' + '1111' + '10101010' + '1111' + '10101010111';
-            const strRes =  '111' + '1111' + '111' + '1111' + '111111';
+            const from = 0b101; // 8
+            const to =   0b1; // 3
+            const strFrom = '101' + '111' + '101' + '111' + '101111';
+            const strRes =  '1' + '111' + '1' + '111' + '1111';
 
             const cell = beginCell()
               .storeUint(parseInt(strFrom, 2), strFrom.length)
@@ -144,12 +144,11 @@ describe('Task3', () => {
         });
 
         it('one long cell', async () => {
-            const from = 0b101110101;
-            const to = 0b111111111;
+            const from = 0b101;
+            const to = 0b1;
 
             const cell = beginCell()
-              .storeUint(0, 973)
-              // .storeUint(parseInt('10100001011', 2), '10100001011'.length)
+              .storeUint(0, 1023)
               .endCell();
 
             const res = await task3.getChangedLinkedList(from, to, cell);
@@ -171,14 +170,15 @@ describe('Task3', () => {
 
             const cellRes = beginCell()
               .storeUint(0, 1012)
-              .storeUint(0b1010000, lg2(0b1010000))
+              .storeUint(0b10100001111, lg2(0b10100001111))
               .storeRef(
                 beginCell()
-                  .storeUint(0b111111111000111111, lg2(0b111111111000111111))
+                  .storeUint(0b11111000111111, lg2(0b11111000111111))
               )
               .endCell();
 
             const res = await task3.getChangedLinkedList(from, to, cell);
+            // console.log('>>>>>', parseRes(res));
 
             expect(res).toEqualCell(cellRes);
         });
@@ -353,6 +353,57 @@ describe('Task3', () => {
               .endCell();
 
             const res = await task3.getChangedLinkedList(from, value, cell);
+
+            expect(res).toEqualCell(cellRes);
+        });
+    });
+
+    describe('add_uint_to_builder', () => {
+        it('simplest', async () => {
+            const cell = beginCell().endCell();
+            const put = 0b1010001001;
+
+            const cellRes = beginCell().storeUint(put, lg2(put)).endCell();
+
+            const res = await task3.getStoreUint(cell, put, lg2(put));
+
+            expect(res).toEqualCell(cellRes);
+        });
+
+        it('to second cell', async () => {
+            const cell = beginCell().storeUint(0, 1020).endCell();
+            const put = 0b1010001001;
+
+            const cellRes = beginCell().storeUint(0, 1020)
+              .storeUint(0b101, 3)
+              .storeRef(beginCell().storeUint(0b1001, 7))
+              .endCell();
+
+            const res = await task3.getStoreUint(cell, put, lg2(put));
+
+            expect(res).toEqualCell(cellRes);
+        });
+
+        it('to third cell with full first one', async () => {
+            const cell = beginCell()
+              .storeUint(0, 1023)
+              .storeRef(
+                beginCell()
+                  .storeUint(0, 1020)
+              ).endCell();
+            const put = 0b1010001001;
+
+            const cellRes = beginCell()
+              .storeUint(0, 1023)
+              .storeRef(
+                beginCell()
+                  .storeUint(0, 1020)
+                  .storeUint(0b101, 3)
+                  .storeRef(
+                    beginCell().storeUint(0b1001, 7))
+              ).endCell();
+
+            const res = await task3.getStoreUint(cell, put, lg2(put));
 
             expect(res).toEqualCell(cellRes);
         });

@@ -34,99 +34,127 @@ const MAX_BITS = 1023;
     return i;
 }
 
-(slice, int) slice_and_len_from_int(int v) inline {
-    int bit_len = bits_from_int(v);
-    return (begin_cell().store_uint(v, bit_len).end_cell().begin_parse(), bit_len);
-}
+(cell) add_uint_to_train(cell r, int v, int v_l) method_id {
+    slice s = r.begin_parse();
 
-(builder) write_slice(int buf_int, int buf_len, slice f_slice, int f_len, slice v_slice, int v_len, slice from, builder to) {
+    if (s.slice_refs_empty?()) {
+        int l = s.slice_bits();
 
-    while (~ from.slice_data_empty?()) {
-        int from_bit = from~load_uint(1);
+        if (l == MAX_BITS) {
+            return begin_cell()
+                    .store_slice(s)
+                    .store_ref(begin_cell().store_uint(v, v_l).end_cell())
+                    .end_cell();
+        }
 
-        (_, int compare_with) = f_slice.skip_bits(buf_len).load_uint(1);
+        l += v_l;
 
-        if (from_bit ^ compare_with) {
-            if (to.end_cell().begin_parse().slice_bits() + buf_len + 1 <= MAX_BITS) {
-                if (buf_len) {
-                    to~store_uint(buf_int, buf_len);
-                    to~store_uint(from_bit, 1);
-                    buf_len = 0;
-                    buf_int = 0;
-                } else {
-                    to~store_uint(from_bit, 1);
-                }
-            } else {
-                return to.store_ref(write_slice(
-                        0,
-                        0,
-                    f_slice,
-                    f_len,
-                    v_slice,
-                    v_len,
-                    from,
-                    begin_cell().store_uint(buf_int, buf_len).store_uint(from_bit, 1)
-                ).end_cell());
-            }
+        if (l <= MAX_BITS) {
+            return begin_cell()
+                    .store_slice(s)
+                    .store_uint(v, v_l)
+                    .end_cell();
         } else {
-            if (buf_len + 1 == f_len) {
-                if (to.end_cell().begin_parse().slice_bits() + v_len <= MAX_BITS) {
-                    to = to.store_slice(v_slice);
-                } else {
-                    return to.store_ref(write_slice(
-                        0,
-                            0,
-                        f_slice,
-                        f_len,
-                        v_slice,
-                        v_len,
-                        from,
-                        begin_cell().store_slice(v_slice)
-                    ).end_cell());
-                }
-
-                buf_len = 0;
-                buf_int = 0;
-            } else {
-                buf_len += 1;
-                buf_int = (buf_int << 1) + from_bit;
-            }
+            int p2 = l - MAX_BITS;
+            int p1 = v_l - p2;
+            int v1 = v >> p2;
+            int v2 = v - (v1 << p2);
+            return begin_cell()
+                    .store_slice(s)
+                    .store_uint(v1, p1)
+                    .store_ref(begin_cell().store_uint(v2, p2).end_cell())
+                    .end_cell();
         }
     }
 
-    if (from.slice_refs_empty?()) {
-        if (to.end_cell().begin_parse().slice_bits() + buf_len <= MAX_BITS) {
-            return to.store_uint(buf_int, buf_len);
-        } else {
-            return to.store_ref(begin_cell().store_uint(buf_int, buf_len).end_cell());
-        }
-    }
-
-    return write_slice(
-    buf_int,
-    buf_len,
-        f_slice,
-        f_len,
-        v_slice,
-        v_len,
-        from~load_ref().begin_parse(),
-        to
-    );
+    cell ref = s~load_ref();
+    return begin_cell().store_slice(s).store_ref(
+            add_uint_to_train(ref, v, v_l)
+    ).end_cell();
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-    (slice f_slice, int f_len) = slice_and_len_from_int(flag);
-    (slice v_slice, int v_len) = slice_and_len_from_int(value);
+    int n_l = bits_from_int(flag);
+    int v_l = bits_from_int(value);
 
-    return write_slice(
-            0,
-            0,
-            f_slice,
-            f_len,
-            v_slice,
-            v_len,
-            linked_list.begin_parse(),
-            begin_cell()
-    ).end_cell();
+    slice h = linked_list.begin_parse();
+    cell r = begin_cell().end_cell();
+
+    int cursor = 0;
+
+    int p = 0;
+    int p_l = 0;
+    int p_cursor = 0;
+
+    while (cursor + n_l - p_l <= h.slice_bits()) {
+        int n = flag;
+        int compare_with = h.skip_bits(cursor).preload_uint(n_l - p_l + p_cursor);
+
+        if (p_l) {
+            if (p_cursor) {
+                int p_cur_l = p_l - p_cursor;
+                compare_with += (p ^ ((p >> p_cur_l) << p_cur_l)) << (n_l - p_l + p_cursor);
+            } else {
+                compare_with += p << (n_l - p_l);
+            }
+        }
+
+        if (n ^ compare_with) {
+            if (p_l) {
+                p_cursor += 1;
+                if (p_cursor == p_l) {
+                    p_cursor = 0;
+                    r = r.add_uint_to_train(p, p_l);
+                    p_l = 0;
+                    p = 0;
+                }
+            } else {
+                cursor += 1;
+            }
+        } else {
+            if (p_cursor) {
+                r = r.add_uint_to_train(p >> (p_l - p_cursor), p_cursor);
+            }
+            if (cursor) {
+                r = r.add_uint_to_train(h~load_uint(cursor), cursor);
+            }
+
+            h~load_uint(n_l - p_l + p_cursor);
+
+            r = r.add_uint_to_train(value, v_l);
+
+            cursor = 0;
+
+            if (p_l) {
+                p_l = 0;
+                p = 0;
+                p_cursor = 0;
+            }
+        }
+
+        if (cursor == 128) {
+            r = r.add_uint_to_train(h~load_uint(cursor), cursor);
+            cursor = 0;
+        }
+
+        if (cursor + n_l - p_l > h.slice_bits()) {
+            if (cursor) {
+                r = r.add_uint_to_train(h~load_uint(cursor - 1), cursor - 1);
+            }
+
+            p_l = h.slice_bits();
+            p = h~load_uint(p_l);
+            if (~ h.slice_refs_empty?()) {
+                cursor = 0;
+                h = h~load_ref().begin_parse();
+            }
+        }
+    }
+
+    if (p_l) {
+        r = r.add_uint_to_train(p, p_l);
+    }
+
+    return r;
 }

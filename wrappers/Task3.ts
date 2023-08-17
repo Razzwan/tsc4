@@ -56,4 +56,13 @@ export class Task3 implements Contract {
 		]);
 		return result.stack.readCell();
 	}
+
+	async getStoreUint(provider: ContractProvider, cell: Cell, v: number, v_l: number): Promise<Cell> {
+		const result = await provider.get('add_uint_to_train', [
+			{type: 'cell', cell},
+			{type: 'int', value: BigInt(v)},
+			{type: 'int', value: BigInt(v_l)},
+		]);
+		return result.stack.readCell();
+	}
 }
