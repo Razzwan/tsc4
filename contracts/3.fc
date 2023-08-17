@@ -78,6 +78,14 @@ const MAX_BITS = 1023;
     int n_l = bits_from_int(flag);
     int v_l = bits_from_int(value);
 
+    if (flag <= 0) {
+        return begin_cell().end_cell();
+    }
+
+    if (value <= 0) {
+        return begin_cell().end_cell();
+    }
+
     slice h = linked_list.begin_parse();
     cell r = begin_cell().end_cell();
 
