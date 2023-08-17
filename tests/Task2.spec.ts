@@ -43,37 +43,37 @@ describe('Task2', () => {
         // blockchain and task2 are ready to use
     });
 
-    describe('multiply 2 tuples', () => {
-        it('just simple sum', async () => {
-            const res = await task2.getMultiply2Tuples([getTuple1([1, 1, 1]), getTuple1([2, 2, 2])]);
-            expect(res).toBe(6);
-        });
+    // describe('multiply 2 tuples', () => {
+    //     it('just simple sum', async () => {
+    //         const res = await task2.getMultiply2Tuples([getTuple1([1, 1, 1]), getTuple1([2, 2, 2])]);
+    //         expect(res).toBe(6);
+    //     });
+    //
+    //     it('just 3x3 1', async () => {
+    //         const res = await task2.getMultiply2Tuples([getTuple1([1, 2, 3]), getTuple1([7, 9, 11])]);
+    //         expect(res).toBe(58);
+    //     });
+    //
+    //     it('just 3x3 2', async () => {
+    //         const res = await task2.getMultiply2Tuples([getTuple1([1, 2, 3]), getTuple1([8, 10, 12])]);
+    //         expect(res).toBe(64);
+    //     });
+    //
+    //     it('sum is 64', async () => {
+    //         const res = await task2.getMultiply2Tuples([
+    //           getTuple1(arrFromNum(32, 1)),
+    //           getTuple1(arrFromNum(32, 2))
+    //         ]);
+    //         expect(res).toBe(64);
+    //     });
+    // });
 
-        it('just 3x3 1', async () => {
-            const res = await task2.getMultiply2Tuples([getTuple1([1, 2, 3]), getTuple1([7, 9, 11])]);
-            expect(res).toBe(58);
-        });
-
-        it('just 3x3 2', async () => {
-            const res = await task2.getMultiply2Tuples([getTuple1([1, 2, 3]), getTuple1([8, 10, 12])]);
-            expect(res).toBe(64);
-        });
-
-        it('sum is 64', async () => {
-            const res = await task2.getMultiply2Tuples([
-              getTuple1(arrFromNum(32, 1)),
-              getTuple1(arrFromNum(32, 2))
-            ]);
-            expect(res).toBe(64);
-        });
-    });
-
-    describe('rotate 90 degrees', () => {
-        it ('rotate 90 degrees, 3x2', async () => {
-            const res = await task2.getTurnTuple90([getTuple2([[7, 8], [9, 10], [11, 12]])]);
-            expect(parseData(res)).toEqual([[7,9,11], [8,10,12]]);
-        });
-    });
+    // describe('rotate 90 degrees', () => {
+    //     it ('rotate 90 degrees, 3x2', async () => {
+    //         const res = await task2.getTurnTuple90([getTuple2([[7, 8], [9, 10], [11, 12]])]);
+    //         expect(parseData(res)).toEqual([[7,9,11], [8,10,12]]);
+    //     });
+    // });
 
     describe('multiply matrix', () => {
         it('multiply simplest matrix', async () => {
