@@ -87,6 +87,21 @@ const MAX_BITS = 1023;
     int p_l = 0;
     int p_cursor = 0;
 
+    while (cursor + n_l > h.slice_bits()) & (~ h.slice_refs_empty?()) {
+        cursor = 0;
+        slice new_h = h~load_ref().begin_parse();
+        if (cursor + n_l > h.slice_bits() + new_h.slice_bits()) {
+            int h_len_slice = h.slice_bits();
+            h = begin_cell()
+                    .store_uint(h~load_uint(h_len_slice), h_len_slice)
+                    .store_slice(new_h)
+                    .end_cell()
+                    .begin_parse();
+        } else {
+            h = new_h;
+        }
+    }
+
     while (cursor + n_l - p_l + p_cursor <= h.slice_bits()) {
         int n = flag;
         int compare_with = h.skip_bits(cursor).preload_uint(n_l - p_l + p_cursor);

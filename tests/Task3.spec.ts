@@ -251,14 +251,15 @@ describe('Task3', () => {
 
             const cellRes = beginCell()
               .storeUint(0, 1021)
+              .storeUint(0b10, 2)
               .storeRef(
                 beginCell()
-                  .storeUint(0b1001000000, 10)
+                  .storeUint(0b1000000, 8)
                   .storeUint(0, 1013)
+                  .storeUint(2, 2)
                   .storeRef(
                     beginCell()
-                      .storeUint(1, 1)
-                      .storeUint(1, 32)
+                      .storeUint(1, 31)
                   )
               )
               .endCell();
@@ -284,9 +285,10 @@ describe('Task3', () => {
 
             const cellRes = beginCell()
               .storeUint(0, 1021)
+              .storeUint(0b11, 2)
               .storeRef(
                 beginCell()
-                  .storeUint(0b111111000000, lg2(0b111111000000))
+                  .storeUint(0b1111000000, lg2(0b1111000000))
               )
               .endCell();
 
@@ -311,9 +313,10 @@ describe('Task3', () => {
 
             const cellRes = beginCell()
               .storeUint(0, 1021)
+              .storeUint(0b11, 2)
               .storeRef(
                 beginCell()
-                  .storeUint(0b1111111111110, lg2(0b1111111111110))
+                  .storeUint(0b11111111110, 11)
               )
               .endCell();
 
@@ -352,6 +355,23 @@ describe('Task3', () => {
 
             const cellRes = beginCell()
               .storeUint(0b111111, 6)
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, value, cell);
+            console.log('>>>>> ', parseRes(res));
+            expect(res).toEqualCell(cellRes);
+        });
+
+        it('first is empty cell', async () => {
+            const from = 0b1;
+            const value = 0b111;
+
+            const cell = beginCell()
+              .storeRef(beginCell().storeRef(beginCell().storeUint(0b1, 1)))
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0b111, 3)
               .endCell();
 
             const res = await task3.getChangedLinkedList(from, value, cell);
