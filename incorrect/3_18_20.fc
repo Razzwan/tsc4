@@ -1,0 +1,200 @@
+{-
+  TASK 3 - Find and replace binary substring
+  Binary string is represented as a cell linked list: string splitted to chunks,
+  first chunk stored to the root cell, next one to the cell in ref and so on;
+  each cell can have only one ref.
+  Write the method that find and replaces one flags in the binary string
+  with another value. Flags and values can be of any length, but
+  strictly up to 128 bits. The method must replace every flag it finds.
+  Flag and the value to be replaced is guaranteed to be greater than 0.
+  Lets give a simple example. We have the target flag 101110101 and the value
+  to be written 111111111 as inputs, and a linked list of cells, in which the bit
+  value of the first cell ends with ...10100001011, and in the ref we have cell that
+  starts with 10101000111111...
+  The output should be a linked list where the first
+  cell ends with ...10100001111, and the second cell starts with 11111000111111...
+
+-}
+
+() recv_internal() {
+}
+
+const MAX_BITS = 1023;
+
+(int) bits_from_int(int t) inline {
+    if (t == 0) {
+        return 1;
+    }
+    int i = 0;
+    int r = t;
+    while (r > 0) {
+        r = r >> 1;
+        i += 1;
+    }
+    return i;
+}
+
+(cell) add_uint_to_train(cell r, int v, int v_l) method_id {
+    slice s = r.begin_parse();
+
+    if (s.slice_refs_empty?()) {
+        int l = s.slice_bits();
+
+        if (l == MAX_BITS) {
+            return begin_cell()
+                    .store_slice(s)
+                    .store_ref(begin_cell().store_uint(v, v_l).end_cell())
+                    .end_cell();
+        }
+
+        l += v_l;
+
+        if (l <= MAX_BITS) {
+            return begin_cell()
+                    .store_slice(s)
+                    .store_uint(v, v_l)
+                    .end_cell();
+        } else {
+            int p2 = l - MAX_BITS;
+            int p1 = v_l - p2;
+            int v1 = v >> p2;
+            int v2 = v - (v1 << p2);
+            return begin_cell()
+                    .store_slice(s)
+                    .store_uint(v1, p1)
+                    .store_ref(begin_cell().store_uint(v2, p2).end_cell())
+                    .end_cell();
+        }
+    }
+
+    cell ref = s~load_ref();
+    return begin_cell().store_slice(s).store_ref(
+            add_uint_to_train(ref, v, v_l)
+    ).end_cell();
+}
+
+;; testable
+(cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+    int n_l = bits_from_int(flag);
+    int v_l = bits_from_int(value);
+
+    if (flag <= 0) {
+        return linked_list;
+    }
+
+    if (value <= 0) {
+        return linked_list;
+    }
+
+    slice h = linked_list.begin_parse();
+    cell r = begin_cell().end_cell();
+
+    int cursor = 0;
+
+    int p = 0;
+    int p_l = 0;
+    int p_cursor = 0;
+
+    while (n_l - p_l > h.slice_bits()) & (~ h.slice_refs_empty?()) {
+        slice new_h = h~load_ref().begin_parse();
+        if (n_l - p_l > h.slice_bits() + new_h.slice_bits()) {
+            int h_len_slice = h.slice_bits();
+            if (p_l) {
+                p_l += h_len_slice;
+                p = (p << h_len_slice) + h~load_uint(h_len_slice);
+            } else {
+                p = h~load_uint(h_len_slice);
+                p_l = h_len_slice;
+            }
+        }
+
+        h = new_h;
+    }
+
+    while (cursor + n_l - p_l + p_cursor <= h.slice_bits()) {
+        int n = flag;
+        ;; загружаем кусочек битов не из буфера, чтоб догнать длину n_l
+        int compare_with = h.skip_bits(cursor).preload_uint(n_l - p_l + p_cursor);
+
+        if (p_l) {
+            if (p_cursor) {
+                int p_cur_l = p_l - p_cursor;
+                compare_with += (p ^ ((p >> p_cur_l) << p_cur_l)) << (n_l - p_l + p_cursor);
+            } else {
+                compare_with += p << (n_l - p_l);
+            }
+        }
+
+        if (n ^ compare_with) {
+            if (p_l) {
+                p_cursor += 1;
+                if (p_cursor == p_l) {
+                    p_cursor = 0;
+                    r = r.add_uint_to_train(p, p_l);
+                    p_l = 0;
+                    p = 0;
+                }
+            } else {
+                cursor += 1;
+                if (cursor == 256) {
+                    r = r.add_uint_to_train(h~load_uint(cursor), cursor);
+                    cursor = 0;
+                }
+            }
+        } else {
+            if (p_cursor) {
+                r = r.add_uint_to_train(p >> (p_l - p_cursor), p_cursor);
+            } else {
+                if (cursor) {
+                    r = r.add_uint_to_train(h~load_uint(cursor), cursor);
+                }
+            }
+
+            h~load_uint(n_l - p_l + p_cursor);
+
+            r = r.add_uint_to_train(value, v_l);
+
+            cursor = 0;
+
+            if (p_l) {
+                p_l = 0;
+                p = 0;
+                p_cursor = 0;
+            }
+        }
+
+        if (cursor + n_l - p_l + p_cursor > h.slice_bits()) {
+            if (cursor) {
+                r = r.add_uint_to_train(h~load_uint(cursor - 1), cursor - 1);
+            }
+
+            p_l = h.slice_bits();
+            p = h~load_uint(p_l);
+
+            while (cursor + n_l - p_l + p_cursor > h.slice_bits()) & (~ h.slice_refs_empty?()) {
+                cursor = 0;
+                slice new_h = h~load_ref().begin_parse();
+                if (cursor + n_l - p_l + p_cursor > h.slice_bits() + new_h.slice_bits()) {
+                    int h_len_slice = h.slice_bits();
+                    if (p_l) {
+                        p_l += h_len_slice;
+                        p = (p << h_len_slice) + h~load_uint(h_len_slice);
+                    } else {
+                        if (h_len_slice) {
+                            p_l = h_len_slice;
+                            p = h~load_uint(h_len_slice);
+                        }
+                    }
+                }
+
+                h = new_h;
+            }
+        }
+    }
+
+    if (p_l) {
+        r = r.add_uint_to_train(p, p_l);
+    }
+
+    return r;
+}
