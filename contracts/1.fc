@@ -15,12 +15,10 @@
     return tree;
   }
 
-  slice treeSlice = tree.begin_parse();
+  slice tree_s = tree.begin_parse();
 
-  while (treeSlice.slice_refs_empty?() == 0) {
-    cell branch = treeSlice~load_ref();
-
-    cell res = find_branch_by_hash(hash, branch);
+  while (~ tree_s.slice_refs_empty?()) {
+    cell res = find_branch_by_hash(hash, treeSlice~load_ref());
 
     ifnot (res.begin_parse().slice_empty?()) {
       return res;
