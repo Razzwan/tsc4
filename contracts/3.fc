@@ -87,7 +87,7 @@ const MAX_BITS = 1023;
     int p_l = 0;
     int p_cursor = 0;
 
-    while (cursor + n_l - p_l <= h.slice_bits()) {
+    while (cursor + n_l - p_l + p_cursor <= h.slice_bits()) {
         int n = flag;
         int compare_with = h.skip_bits(cursor).preload_uint(n_l - p_l + p_cursor);
 
@@ -138,7 +138,7 @@ const MAX_BITS = 1023;
             cursor = 0;
         }
 
-        if (cursor + n_l - p_l > h.slice_bits()) {
+        if (cursor + n_l - p_l + p_cursor > h.slice_bits()) {
             if (cursor) {
                 r = r.add_uint_to_train(h~load_uint(cursor - 1), cursor - 1);
             }
@@ -146,9 +146,20 @@ const MAX_BITS = 1023;
             p_l = h.slice_bits();
             p = h~load_uint(p_l);
 
-            while (cursor + n_l - p_l > h.slice_bits()) & (~ h.slice_refs_empty?()) {
+            while (cursor + n_l - p_l + p_cursor > h.slice_bits()) & (~ h.slice_refs_empty?()) {
                 cursor = 0;
                 h = h~load_ref().begin_parse();
+                if (cursor + n_l - p_l + p_cursor > h.slice_bits()) {
+                    if (p_l) {
+                        h = begin_cell()
+                                .store_uint(p, p_l)
+                                .store_slice(h)
+                                .end_cell()
+                                .begin_parse();
+                        p = 0;
+                        p_l = 0;
+                    }
+                }
             }
         }
     }
