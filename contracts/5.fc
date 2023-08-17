@@ -20,7 +20,7 @@
   return (right, left + right);
 }
 
-(int, int) first_pare(int n) {
+(int, int) first_pare(int n) inline {
   if (n == 0) {
     return (0, 1);
   }
@@ -37,12 +37,6 @@
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
-  throw_if(1, n < 0);
-  throw_if(1, k < 0);
-  throw_if(1, k > 255);
-  throw_if(1, n > 370);
-  throw_if(1, n + k > 371);
-
   tuple r = empty_tuple();
 
   if (k == 0) {
@@ -65,4 +59,3 @@
 
   return r;
 }
-

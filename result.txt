@@ -3,8 +3,8 @@
 Problem #1:
 Compiled: true
 Passed Tests: true
-GasValue: 2639839
-Points: 5.215435532999546
+GasValue: 2614863
+Points: 5.2185873083320375
 
 Problem #2:
 Compiled: true
