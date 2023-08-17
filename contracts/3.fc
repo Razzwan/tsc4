@@ -144,16 +144,14 @@ const MAX_BITS = 1023;
 
             p_l = h.slice_bits();
             p = h~load_uint(p_l);
-            p_cursor = 0;
 
             while (cursor + n_l - p_l + p_cursor > h.slice_bits()) & (~ h.slice_refs_empty?()) {
                 cursor = 0;
                 slice new_h = h~load_ref().begin_parse();
-                if (new_h.slice_bits() < 128) {
+                if (cursor + n_l - p_l + p_cursor > h.slice_bits() + new_h.slice_bits()) {
                     if (p_l) {
                         h = begin_cell()
                                 .store_uint(p, p_l)
-                                .store_slice(h)
                                 .store_slice(new_h)
                                 .end_cell()
                                 .begin_parse();
@@ -162,12 +160,15 @@ const MAX_BITS = 1023;
                         p_l = 0;
                         p_cursor = 0;
                     } else {
+                        int h_len_slice = h.slice_bits();
                         h = begin_cell()
-                                .store_slice(h)
+                                .store_uint(h~load_uint(h_len_slice), h_len_slice)
                                 .store_slice(new_h)
                                 .end_cell()
                                 .begin_parse();
                     }
+                } else {
+                    h = new_h;
                 }
             }
         }
