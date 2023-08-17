@@ -378,6 +378,23 @@ describe('Task3', () => {
             console.log('>>>>> ', parseRes(res));
             expect(res).toEqualCell(cellRes);
         });
+
+        it('9000 characters', async () => {
+            const from = 0b1;
+            const value = 0b111;
+
+            const cell = beginCell()
+              .storeRef(beginCell().storeRef(beginCell().storeUint(0b1, 1)))
+              .endCell();
+
+            const cellRes = beginCell()
+              .storeUint(0b111, 3)
+              .endCell();
+
+            const res = await task3.getChangedLinkedList(from, value, cell);
+            console.log('>>>>> ', parseRes(res));
+            expect(res).toEqualCell(cellRes);
+        });
     });
 
     describe('add_uint_to_builder', () => {

@@ -88,7 +88,6 @@ const MAX_BITS = 1023;
     int p_cursor = 0;
 
     while (cursor + n_l > h.slice_bits()) & (~ h.slice_refs_empty?()) {
-        cursor = 0;
         slice new_h = h~load_ref().begin_parse();
         if (cursor + n_l > h.slice_bits() + new_h.slice_bits()) {
             int h_len_slice = h.slice_bits();
@@ -104,6 +103,7 @@ const MAX_BITS = 1023;
 
     while (cursor + n_l - p_l + p_cursor <= h.slice_bits()) {
         int n = flag;
+        ;; загружаем кусочек битов не из буфера, чтоб догнать длину n_l
         int compare_with = h.skip_bits(cursor).preload_uint(n_l - p_l + p_cursor);
 
         if (p_l) {
@@ -126,7 +126,7 @@ const MAX_BITS = 1023;
                 }
             } else {
                 cursor += 1;
-                if (cursor == 128) {
+                if (cursor == 256) {
                     r = r.add_uint_to_train(h~load_uint(cursor), cursor);
                     cursor = 0;
                 }
@@ -134,9 +134,10 @@ const MAX_BITS = 1023;
         } else {
             if (p_cursor) {
                 r = r.add_uint_to_train(p >> (p_l - p_cursor), p_cursor);
-            }
-            if (cursor) {
-                r = r.add_uint_to_train(h~load_uint(cursor), cursor);
+            } else {
+                if (cursor) {
+                    r = r.add_uint_to_train(h~load_uint(cursor), cursor);
+                }
             }
 
             h~load_uint(n_l - p_l + p_cursor);
