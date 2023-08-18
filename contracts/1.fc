@@ -11,21 +11,19 @@
 
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  slice tree_s = tree.begin_parse();
-
-  int cell_type = tree_s.preload_int(8);
-
-  if (~ (cell_type ^ 1)) {
-    return begin_cell().end_cell();
-  }
-
   if (tree.cell_depth()) {
+    slice tree_s = tree.begin_parse();
     while (~ tree_s.slice_refs_empty?()) {
       cell s = tree_s~load_ref();
-      cell res = find_branch_by_hash(hash, s);
 
-      ifnot (res.begin_parse().slice_empty?()) {
-        return res;
+      int cell_type = s.begin_parse().preload_int(8);
+
+      if (cell_type ^ 1) {
+        cell res = find_branch_by_hash(hash, s);
+
+        ifnot (res.begin_parse().slice_empty?()) {
+          return res;
+        }
       }
     }
   }
