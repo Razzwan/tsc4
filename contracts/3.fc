@@ -40,7 +40,7 @@ const NUMBER_BITS_ALL = NUMBER_BITS * M;
 (builder) find_and_replace_slice(slice buf, slice from, builder to, int f, int f_l, int v, int v_l) {
     from = begin_cell()
             .store_ref(
-                    begin_cell().store_slice(from).end_cell())
+                begin_cell().store_slice(from).end_cell())
             .end_cell()
             .begin_parse();
 
@@ -51,7 +51,7 @@ const NUMBER_BITS_ALL = NUMBER_BITS * M;
         if (buf.slice_bits() < f_l) {
             if (from.slice_bits() >= NUMBER_BITS_ALL) {
                 builder for_buf = begin_cell()
-                        .store_slice(buf);
+                    .store_slice(buf);
                 repeat (M) {
                    for_buf~store_uint(from~load_uint(NUMBER_BITS), NUMBER_BITS);
                 }
@@ -63,10 +63,10 @@ const NUMBER_BITS_ALL = NUMBER_BITS * M;
                 int from_l = from.slice_bits();
 
                 buf = begin_cell()
-                        .store_uint(buf_v, buf_l)
-                        .store_uint(from~load_uint(from_l), from_l)
-                        .end_cell()
-                        .begin_parse();
+                    .store_uint(buf_v, buf_l)
+                    .store_uint(from~load_uint(from_l), from_l)
+                    .end_cell()
+                    .begin_parse();
 
                 if (~ from.slice_refs_empty?()) {
                     from = from~load_ref().begin_parse();
@@ -89,11 +89,11 @@ const NUMBER_BITS_ALL = NUMBER_BITS * M;
                 to~store_uint(to_load, to_load_l);
             } else {
                 return to.store_ref(find_and_replace_slice(
-                        buf,
-                        from,
-                        begin_cell()
-                            .store_uint(to_load, to_load_l),
-                        f, f_l, v, v_l
+                    buf,
+                    from,
+                    begin_cell()
+                        .store_uint(to_load, to_load_l),
+                    f, f_l, v, v_l
                 ).end_cell());
             }
         }
@@ -107,7 +107,7 @@ const NUMBER_BITS_ALL = NUMBER_BITS * M;
     } else {
         return to.store_ref(
                 begin_cell()
-                        .store_uint(to_load, to_load_l).end_cell()
+                    .store_uint(to_load, to_load_l).end_cell()
         );
     }
 }
