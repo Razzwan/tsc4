@@ -16,14 +16,10 @@
     while (~ tree_s.slice_refs_empty?()) {
       cell s = tree_s~load_ref();
 
-      int cell_type = s.begin_parse().preload_int(8);
+      cell res = find_branch_by_hash(hash, s);
 
-      if (cell_type ^ 1) {
-        cell res = find_branch_by_hash(hash, s);
-
-        ifnot (res.begin_parse().slice_empty?()) {
-          return res;
-        }
+      ifnot (res.begin_parse().slice_empty?()) {
+        return res;
       }
     }
   }
